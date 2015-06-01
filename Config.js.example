@@ -1,0 +1,10 @@
+/*global module */
+
+module.exports = {
+    mysql: {
+        // you will need to change these
+        user     : 'mschwartz',
+        password : '',
+        database : 'blog'
+    }
+};
