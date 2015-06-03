@@ -1,10 +1,15 @@
 /*global module */
 
 module.exports = {
+    http: {
+        port: 9090,
+        address: '0.0.0.0'
+    },
     mysql: {
         // you will need to change these
-        user     : 'mschwartz',
+        user : 'mschwartz',
         password : '',
         database : 'blog'
-    }
+    },
+    adminEmail: 'mykesx@gmail.com'  // where admin emails get sent
 };

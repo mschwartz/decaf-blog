@@ -1,4 +1,4 @@
 #!/bin/sh
 
-./bower_components/decaf/bin/decafn8 app.js
+./bower_components/decaf/bin/decaf app.js
 
