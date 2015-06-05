@@ -21,10 +21,13 @@ var Config = require('Config'),
 require('models');
 
 function main() {
+    app.verb('css', new StaticServer('css'));
     app.verb('bower_components', new StaticServer('bower_components'));
-    app.verb('html', new StaticServer('html'));
+    app.verb('app_components', new StaticServer('app_components'));
     app.verb('rpc', new SjsServer('rpc'));
-    app.verb('/', new StaticFile('html/index.html'));
+    // pages
+    app.verb('/', new SjsFile('controllers/home.sjs'));
+    app.verb('compose', new SjsFile('controllers/compose.sjs'));
     app.listen(Config.http.port, Config.http.address, 10);
     console.log('listening on http://127.0.0.1:'+Config.http.port)
 }

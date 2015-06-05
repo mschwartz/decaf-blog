@@ -1,0 +1,152 @@
+<dom-model id="codemirror-editor">
+    <script src="/bower_components/codemirror/lib/codemirror.js"></script>
+    <link rel="stylesheet" href="/bower_components/codemirror/lib/codemirror.css">
+    <script src="/bower_components/codemirror/addon/selection/active-line.js"></script>
+    <script src="/bower_components/codemirror/mode/xml/xml.js"></script>
+    <script src="/bower_components/codemirror/mode/css/css.js"></script>
+    <script src="/bower_components/codemirror/mode/javascript/javascript.js"></script>
+    <script src="/bower_components/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+    <script src="/bower_components/codemirror/mode/markdown/markdown.js"></script>
+
+    <style>
+        .CodeMirror {
+            /*height: auto;*/
+            height: 100%;
+        }
+
+        .CodeMirror-focused {
+            /*border: 1px solid #aaa;*/
+        }
+
+        /*.CodeMirror-activeLine {*/
+        /*background: blue;*/
+        /*color: white;*/
+        /*}*/
+    </style>
+    <template>
+        <div id="content" style="display: none">
+            <content></content>
+        </div>
+        <textarea id="editor"></textarea>
+    </template>
+    <script>
+        Polymer({
+            is         : 'codemirror-editor',
+            properties : {
+                mode            : {
+                    type  : String,
+                    value : 'htmlmixed'
+                },
+                readOnly        : {
+                    type  : Boolean,
+                    value : false
+                },
+                lineNumbers     : {
+                    type  : Boolean,
+                    value : true
+                },
+                styleActiveLine : {
+                    type  : Boolean,
+                    value : true
+                }
+            },
+            ready      : function () {
+                setTimeout(function () {
+                    var me         = this,
+                        el         = this.$.editor,
+                        codemirror = this.codemirror = CodeMirror.fromTextArea(el, {
+                            mode            : this.mode,
+                            readOnly        : this.readOnly,
+                            lineNumbers     : this.lineNumbers,
+                            styleActiveLine : this.styleActiveLine
+                        });
+                    codemirror.setValue(this.$.content.innerText.trim());
+                    codemirror.on('change', function (editor, changeObj) {
+                        console.log('fire change');
+                        me.fire('change', editor, changeObj);
+                    });
+                    codemirror.on('focus', function (editor) {
+                        setTimeout(function () {
+                            console.log('fire focus');
+                            console.dir(me);
+                            me.fire('focus', editor);
+                        }.bind(this), 1);
+                    });
+                    codemirror.on('blur', function (editor) {
+                        setTimeout(function () {
+                            console.log('fire blur');
+                            console.dir(me);
+                            me.fire('blur', editor);
+                        }.bind(this), 1);
+                    })
+                }.bind(this), 1);
+            },
+            getValue   : function () {
+                return this.codemirror.getValue();
+            },
+            setValue   : function (s) {
+                return this.codemirror.setValue(s);
+            }
+        })
+    </script>
+</dom-model>
+
+<dom-model id="paper-editor">
+    <style>
+        #paper-editor {
+            /*margin: 16px;*/
+            flex: 1;
+            /*padding: 16px;*/
+        }
+        paper-toolbar[editor] {
+            height: 64px;
+        }
+        codemirror-editor.fit {
+            /*margin-top: 64px;*/
+        }
+        #paper-editor {
+            height: 100%;
+        }
+    </style>
+    <template>
+        <paper-material style="height: 100%" id="paper-editor" elevation="{{blurElevation}}" on-focus="onFocus" on-blur="onBlur">
+            <!--<paper-toolbar editor>-->
+                <!--<div title>Test toolbar</div>-->
+            <!--</paper-toolbar>-->
+            <codemirror-editor style="height: 100%" class="fit" mode="markdown">
+                <content></content>
+            </codemirror-editor>
+        </paper-material>
+    </template>
+    <script>
+        Polymer({
+            is         : 'paper-editor',
+            properties : {
+                focusElevation : {
+                    type  : Number,
+                    value : 2
+                },
+                blurElevation  : {
+                    type  : Number,
+                    value : 1
+                },
+                height         : {
+                    type  : Number,
+                    value : 250
+                }
+            },
+            ready      : function () {
+                var el = this.$[ 'paper-editor' ];
+                el.style.height = this.height + 'px';
+            },
+            onFocus    : function (e, detail) {
+                var elevation = this.focusElevation;
+                this.$[ 'paper-editor' ].elevation = this.focusElevation;
+            },
+            onBlur     : function () {
+                this.$[ 'paper-editor' ].elevation = this.blurElevation;
+            }
+        });
+    </script>
+</dom-model>
+

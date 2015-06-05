@@ -1,0 +1,109 @@
+<link rel="import" href="/app_components/codemirror-editor.html">
+<link rel="import" href="/bower_components/iron-icons/image-icons.html">
+
+<dom-model id="markdown-editor">
+    <style>
+        iron-icon {
+            vertical-align: middle;
+            padding-right: 4px;
+        }
+
+        option {
+            display: block;
+        }
+
+        .iron-selected {
+            background-color: #ddd;
+        }
+        dialog.div {
+            padding: 16px;
+        }
+
+        /*h3 {*/
+            /*padding: 0;*/
+            /*margin: 0;*/
+        /*}*/
+    </style>
+    <template>
+        <paper-dialog id="choose-category">
+            <h2>Choose Category</h2>
+            <paper-dialog-scrollable>
+                <div style="padding-left: 16px">
+                <iron-selector id="category-selector" class="dialog">
+                    <div>Item 0</div>
+                    <div>Item 1</div>
+                    <div>Item 2</div>
+                    <div>Item 3</div>
+                    <div>Item 4</div>
+                    <div>Item 5</div>
+                </iron-selector>
+                </div>
+            </paper-dialog-scrollable>
+            <div class="buttons">
+                <paper-button dialog-dismiss>Cancel</paper-button>
+                <paper-button dialog-confirm autofocus on-click="choseCategory">OK</paper-button>
+            </div>
+        </paper-dialog>
+
+        <div class="horizontal flex layout">
+            <div style="flex: .75">
+                <paper-material elevation="2" style="padding: 8px">
+                    <form is="iron-form" id="blog-post-form">
+                        <paper-input-container>
+                            <label>Title</label>
+                            <input is="iron-input" id="title" name="title" label="Title" on-bind-value-changed="titleChanged"></input>
+                        </paper-input-container>
+                        <paper-input name="seo" label="SEO URL"></paper-input>
+                        <div class="horizontal flex layout">
+                            <paper-input id="input-category" style="flex: 1" readOnly name="category" label="Category"></paper-input>
+                            <paper-button raised style="margin-top: 11px" on-click="chooseCategory">Choose...</paper-button>
+                        </div>
+                        <paper-input name="tags" label="Tags separated by commas"></paper-input>
+                    </form>
+                </paper-material>
+            </div>
+            <paper-material elevation="2" style="padding: 8px">
+                <div class="vertical layout" style="flex: .25">
+                    <paper-button raised>
+                        <iron-icon icon="image:remove-red-eye"></iron-icon>
+                        Preview
+                    </paper-button>
+                    <paper-button raised>
+                        <iron-icon icon="save"></iron-icon>
+                        Save Draft
+                    </paper-button>
+                    <paper-button raised>
+                        <iron-icon icon="check"></iron-icon>
+                        Publish
+                    </paper-button>
+                    <div class="horizontal center-justified layout" style="margin-top: 16px">
+                        <paper-toggle-button></paper-toggle-button>
+                        <span style="margin-left: 8px">Allow Comments</span>
+                    </div>
+                </div>
+            </paper-material>
+        </div>
+        <h3>Compose using Markdown:</h3>
+        <paper-editor focus-elevation="4" mode="markdown" height="500"></paper-editor>
+    </template>
+    <script>
+        Polymer({
+            is : 'markdown-editor',
+            category: 3,
+            chooseCategory: function() {
+                var dialog = document.getElementById('choose-category'),
+                    selector = document.getElementById('category-selector');
+                selector.select(''+this.category);
+                dialog.open();
+            },
+            choseCategory: function() {
+                var chosen = document.getElementById('category-selector').selectedItem.innerHTML;
+                console.dir(chosen);
+                document.getElementById('input-category').value = chosen;
+            },
+            titleChanged: function() {
+                console.dir(arguments);
+            }
+        });
+    </script>
+</dom-model>

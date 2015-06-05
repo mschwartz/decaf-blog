@@ -1,6 +1,6 @@
-<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
-<link rel="import" href="../../bower_components/paper-material/paper-material.html">
-<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="/bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="/bower_components/paper-material/paper-material.html">
+<link rel="import" href="/bower_components/paper-button/paper-button.html">
 
 <dom-module id="blog-post">
     <style>
@@ -39,7 +39,7 @@
 
     </style>
     <template>
-        <paper-material elevation="3">
+        <paper-material elevation="1">
             <div class="title">
                 <paper-button class="title" on-click="clickHandler">{{post.title}}</paper-button>
             </div>
@@ -73,6 +73,13 @@
             background-color: blue;
             color: white;
         }
+        h1 {
+            margin-left: 16px;
+        }
+        .pagination {
+            margin-left: 16px;
+        }
+
     </style>
     <template>
         <iron-ajax
@@ -87,10 +94,11 @@
                 >
         </iron-ajax>
 
-        <div>
-            <paper-button raised class="new-post">New Post</paper-button>
+        <div class="horizontal end-justified layout" style="margin-top: 10px; margin-right: 16px">
+            <paper-button raised class="new-post" on-click="newPost">New Post</paper-button>
         </div>
 
+        <h1>Recent Posts</h1>
         <template is="dom-repeat" id="post-list" items="{{list}}">
             <blog-post post="{{item}}">{{item.content}}</blog-post>
         </template>
@@ -123,7 +131,11 @@
             },
             computePageCount : function (count) {
                 return parseInt(1 + count / 25, 10);
+            },
+            newPost: function() {
+                window.location = '/compose/new';
             }
+
         });
     </script>
 </dom-module>

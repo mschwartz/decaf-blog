@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+<head>
+    <script type="application/javascript">
+        foo = 'Mike';
+    </script>
+    <script src="../../bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+    <link rel="import" href="/bower_components/polymer/polymer.html">
+    <link rel="import" href="/bower_components/paper-styles/paper-styles.html">
+    <link rel="import" href="/bower_components/iron-flex-layout/iron-flex-layout.html">
+    <link rel="import" href="/bower_components/iron-icons/iron-icons.html">
+    <link rel="import" href="/bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
+    <link rel="import" href="/bower_components/paper-toolbar/paper-toolbar.html">
+    <link rel="import" href="/bower_components/paper-material/paper-material.html">
+    <link rel="import" href="/bower_components/paper-icon-button/paper-icon-button.html">
+    <link rel="import" href="/bower_components/paper-button/paper-button.html">
+    <link rel="import" href="/app_components/blog-post.html">
+    <link rel="import" href="/app_components/codemirror-editor.html">
+    <style>
+        [content] {
+            padding-left: 16px;
+            padding-right: 16px;
+        @apply(- -layout-horizontal);
+        @apply(- -layout-center);
+            border-bottom: 1px solid #bbb;
+            /*margin-top: 66px;*/
+        }
+
+        span[title] {
+            flex: 1;
+        }
+    </style>
+
+</head>
+<body class="fullbleed fit layout vertical">
+
+<paper-scroll-header-panel class="flex">
+    <paper-toolbar>
+        <paper-icon-button icon="menu"></paper-icon-button>
+        <span title>The Blog (title)</span>
+        <paper-icon-button icon="refresh"></paper-icon-button>
+        <paper-icon-button icon="add">+</paper-icon-button>
+    </paper-toolbar>
+
+    <div content>
+
+        <!-- <blog-titlebar></blog-titlebar> -->
+        <!--<paper-editor focus-elevation="4" height="500">-->
+        <!--var x = 10;-->
+        <!--</paper-editor>-->
+        <blog-post-list id="list"></blog-post-list>
+    </div>
+</paper-scroll-header-panel>
+<script>
+    document.addEventListener('WebComponentsReady', function () {
+        console.log('polymer-ready');
+    });
+</script>
+</body>
+</html>

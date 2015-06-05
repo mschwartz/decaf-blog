@@ -1,0 +1,30 @@
+<dom-model id="blog-titlebar">
+    <style>
+        paper-toolbar[fixed] {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+        }
+        span[title] {
+            flex: 1;
+        }
+        paper-scroll-header-panel {
+            height: 100%;
+        }
+    </style>
+    <template>
+        <paper-toolbar>
+            <paper-icon-button icon="menu"></paper-icon-button>
+            <span title>The Blog (title)</span>
+            <paper-icon-button icon="refresh"></paper-icon-button>
+            <paper-icon-button icon="add">+</paper-icon-button>
+        </paper-toolbar>
+    </template>
+    <script>
+        Polymer({
+            is: 'blog-titlebar'
+        })
+    </script>
+</dom-model>

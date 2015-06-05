@@ -1,0 +1,12 @@
+[content] {
+    padding-left: 16px;
+    padding-right: 16px;
+@apply(--layout-horizontal);
+@apply(--layout-center);
+    border-bottom: 1px solid #bbb;
+    /*margin-top: 66px;*/
+}
+
+span[title] {
+    flex: 1;
+}
