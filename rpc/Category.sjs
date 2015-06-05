@@ -1,12 +1,10 @@
 /*global req, res, require */
 
-var BlogPosts = require('Stores/BlogPosts');
+var Categories = require('Stores/Categories');
 
 switch (req.data.method) {
     case 'list':
-        res.send(200, BlogPosts.list({}, function(record) {
-            record.url = '/view/' + record.seo;
-        }));
+        res.send(200, Categories.list({}));
         break;
     default:
         res.send(400, { message: 'Bad request' });

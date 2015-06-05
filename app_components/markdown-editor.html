@@ -1,13 +1,8 @@
 <link rel="import" href="/app_components/codemirror-editor.html">
 <link rel="import" href="/bower_components/iron-icons/image-icons.html">
 
-<dom-model id="markdown-editor">
+<dom-model id="category-chooser-dialog">
     <style>
-        iron-icon {
-            vertical-align: middle;
-            padding-right: 4px;
-        }
-
         .iron-selected {
             background-color: #ddd;
         }
@@ -15,26 +10,34 @@
         dialog.div {
             padding: 16px;
         }
+
         iron-overlay-backdrop {
             z-index: 70 !important;
         }
+
         .modal, .modal.div {
             z-index: 8000 !important;
         }
     </style>
-
     <template>
+        <iron-ajax
+                id="category-list-requester"
+                url="/rpc/Category.sjs"
+                method="POST"
+                params='{"method": "list", "start":"0", "limit":2000}'
+                handle-as="json"
+                on-response="jsonUpdate"
+                verbose="" true
+                >
+        </iron-ajax>
         <paper-dialog id="choose-category">
             <h2>Choose Category</h2>
             <paper-dialog-scrollable>
                 <div style="padding-left: 16px;">
                     <iron-selector id="category-selector" class="dialog">
-                        <div>Item 0</div>
-                        <div>Item 1</div>
-                        <div>Item 2</div>
-                        <div>Item 3</div>
-                        <div>Item 4</div>
-                        <div>Item 5</div>
+                        <template is="dom-repeat" items="{{list}}">
+                            <div>{{item.name}}</div>
+                        </template>
                     </iron-selector>
                 </div>
             </paper-dialog-scrollable>
@@ -43,10 +46,51 @@
                 <paper-button dialog-confirm autofocus on-click="choseCategory">OK</paper-button>
             </div>
         </paper-dialog>
+    </template>
+    <script>
+        Polymer({
+            is: 'category-chooser-dialog',
+            properties: {
+                count : Number,
+                list  : {
+                    type  : Array,
+                    value : []
+                }
+            },
+            jsonUpdate: function(event, request) {
+                this.count = request.response.count;
+                this.list = request.response.list;
+                console.dir(this.list);
+            },
+            choseCategory: function() {
+                var chosen = document.getElementById('category-selector').selectedItem.innerHTML;
+                console.dir(chosen);
+                this.fire('choose', chosen);
+            },
+            open: function() {
+                document.getElementById('category-list-requester').generateRequest();
+                document.getElementById('choose-category').open();
+            }
+        })
+    </script>
+</dom-model>
 
+
+<dom-model id="markdown-editor">
+    <style>
+        iron-icon {
+            vertical-align: middle;
+            padding-right: 4px;
+        }
+    </style>
+
+    <template>
+        <category-chooser-dialog id="choose-category-dialog" on-choose="choseCategory"></category-chooser-dialog>
         <paper-dialog id="invalid-form">
             <h2>Incomplete Post</h2>
+
             <p>All required fields are not filled out</p>
+
             <div class="buttons">
                 <paper-button dialog-dismiss>OK</paper-button>
             </div>
@@ -57,15 +101,20 @@
                 <paper-material elevation="2" style="padding: 8px">
                     <form is="iron-form" id="blog-post-form">
                         <!--<paper-input-container>-->
-                            <!--<label>Title</label>-->
-                            <!--<input is="iron-input" id="input-title" name="title" label="Title" on-bind-value-changed="titleChanged" required error-message="This field is required" auto-validate="true">-->
-                            <!--</input>-->
+                        <!--<label>Title</label>-->
+                        <!--<input is="iron-input" id="input-title" name="title" label="Title" on-bind-value-changed="titleChanged" required error-message="This field is required" auto-validate="true">-->
+                        <!--</input>-->
                         <!--</paper-input-container>-->
-                        <paper-input id="input-title" label="Title" auto-validate="true" required error-message="This field is required"></paper-input>
-                        <paper-input id="input-seo" label="SEO URL" auto-validate="true" required error-message="This field is required"></paper-input>
+                        <paper-input id="input-title" label="Title" auto-validate="true" required
+                                     error-message="This field is required"></paper-input>
+                        <paper-input id="input-seo" label="SEO URL" auto-validate="true" required
+                                     error-message="This field is required"></paper-input>
                         <div class="horizontal flex layout" style="width: 100%">
-                            <paper-input id="input-category" style="flex: 1"  name="category" label="Category" auto-validate="true" required error-message="This field is required"></paper-input>
-                            <paper-button raised style="margin-top: 11px" on-click="chooseCategory">Choose...</paper-button>
+                            <paper-input id="input-category" style="flex: 1" name="category" label="Category"
+                                         auto-validate="true" required
+                                         error-message="This field is required"></paper-input>
+                            <paper-button raised style="margin-top: 11px" on-click="chooseCategory">Choose...
+                            </paper-button>
                         </div>
                         <paper-input id="tags" label="Tags separated by commas"></paper-input>
                     </form>
@@ -100,22 +149,22 @@
             is             : 'markdown-editor',
             category       : 3,
             chooseCategory : function () {
-                var dialog   = document.getElementById('choose-category'),
+                var dialog   = document.getElementById('choose-category-dialog'),
                     selector = document.getElementById('category-selector');
                 selector.select('' + this.category);
-                setTimeout(function() {
+                setTimeout(function () {
                     dialog.open();
                 }, 1)
             },
-            choseCategory  : function () {
-                var chosen = document.getElementById('category-selector').selectedItem.innerHTML;
-                console.dir(chosen);
+            choseCategory  : function (e, chosen) {
+//                var chosen = document.getElementById('category-selector').selectedItem.innerHTML;
+//                console.dir(chosen);
                 document.getElementById('input-category').value = chosen;
             },
             titleChanged   : function () {
                 console.dir(arguments);
             },
-            save           : function ( published ) {
+            save           : function (published) {
                 var serialized = {
                     category      : document.getElementById('input-category').value.trim(),
                     publish       : !!published,

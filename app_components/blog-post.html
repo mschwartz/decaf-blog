@@ -87,7 +87,7 @@
                 auto
                 url="/rpc/Blog.sjs"
                 method="POST"
-                params='{"start":"0", "limit":25}'
+                params='{"method": "list", "start":"0", "limit":25}'
                 handle-as="json"
                 on-response="jsonUpdate"
                 verbose="" true
@@ -125,9 +125,9 @@
                 }
             },
             jsonUpdate       : function (event, request) {
+                console.dir(this.list);
                 this.count = request.response.count;
                 this.list = request.response.list;
-                console.dir(this.list);
             },
             computePageCount : function (count) {
                 return parseInt(1 + count / 25, 10);

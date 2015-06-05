@@ -24,6 +24,7 @@ function main() {
     app.verb('css', new StaticServer('css'));
     app.verb('bower_components', new StaticServer('bower_components'));
     app.verb('app_components', new StaticServer('app_components'));
+    // RPC
     app.verb('rpc', new SjsServer('rpc'));
     // pages
     app.verb('/', new SjsFile('controllers/home.sjs'));
