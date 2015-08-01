@@ -1,6 +1,7 @@
 /*global module */
 
 module.exports = {
+    blogName   : 'Example Blog',
     http: {
         port: 9090,
         address: '0.0.0.0'
