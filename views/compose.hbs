@@ -81,36 +81,69 @@
     {{! EDITOR }}
     <div id="summernote"></div>
 
-    {{! LIVE CHECKBOX }}
-    <div class="checkbox highlight" id="blog-live">
-        <label class="checkbox-custom highlight" data-initialize="checkbox">
-            <input class="sr-only" type="checkbox" value="live" checked="checked">
-            <span class="checkbox-label checked">Live (uncheck to save as draft)</span>
-        </label>
-    </div>
+    <div class="row">
+        <div class="col-sm-9">
+            <div class="pull-right">
+                {{! LIVE CHECKBOX }}
+                <div class="checkbox highlight" id="blog-live">
+                    <label class="checkbox-custom checkbox-inline highlight" data-initialize="checkbox">
+                        <input class="sr-only" type="checkbox" value="live" checked="checked">
+                        <span class="checkbox-label checked">Live (uncheck to save as draft)</span>
+                    </label>
+                </div>
 
-    {{! OPEN CHECKBOX }}
-    <div class="checkbox highlight" id="blog-open">
-        <label class="checkbox-custom highlight" data-initialize="checkbox">
-            <input class="sr-only" type="checkbox" value="open" checked="checked">
-            <span class="checkbox-label checked">Open (uncheck to disallow new comments)</span>
-        </label>
+                {{! OPEN CHECKBOX }}
+                <div class="checkbox highlight" id="blog-open">
+                    <label class="checkbox-custom checkbox-inline highlight" data-initialize="checkbox">
+                        <input class="sr-only" type="checkbox" value="open" checked="checked">
+                        <span class="checkbox-label checked">Open (uncheck to disallow new comments)</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="pull-right">
+                <button id="save-post-button" class="btn btn-primary" style="margin-top: 10px">Save Post</button>
+                <button id="preview-post-button" class="btn btn-default" style="margin-top: 10px">Preview Post</button>
+                <button id="cancel-post-button" class="btn btn-danger" style="margin-top: 10px">Cancel Post</button>
+            </div>
+        </div>
     </div>
-
 </form>
-<button id="save-post-button" class="btn btn-primary" style="margin-top: 10px">Save Post</button>
 <script>
     $(document).ready(function () {
-        $('#summernote').summernote({ height : 200 });
+        function resize() {
+            console.log('resize');
+            var $noteEditor   = $('.note-editor'),
+                $codable = $('.note-codable'),
+                $editable = $('.note-editable'),
+                $toolbar = $('.note-toolbar'),
+                $footerBottom = $('#footer-bottom'),
+                editorHeight  = $(window).height() - $noteEditor.position().top - $footerBottom.height() - $toolbar.height() - 125; //  - $footerBottom.position().top;
 
-        $('#category-select').on('changed.fu.selectlist', function ( e, data ) {
+//            $noteEditor.height(editorHeight);
+            $codable.height(editorHeight);
+            $editable.height(editorHeight);
+
+//            $summernote.summernote({ height : editorHeight });
+        }
+
+        $(window).on('resize', resize);
+
+        var $summernote   = $('#summernote'),
+            $footerBottom = $('#footer-bottom'),
+            editorHeight  = $(window).height() - $summernote.position().top - $footerBottom.height() - 125; //  - $footerBottom.position().top;
+
+        $summernote.summernote({ height : editorHeight });
+
+        $('#category-select').on('changed.fu.selectlist', function (e, data) {
             // do something
             console.dir(data);
         });
 
         $('#tags-pillbox').pillbox({
             edit      : true,
-            onKeyDown : function ( data, callback ) {
+            onKeyDown : function (data, callback) {
                 console.dir(data);
                 callback([]);
             }
@@ -123,7 +156,7 @@
             }, 100)
         });
 
-        $('#save-post-button').on('click', function ( e ) {
+        $('#save-post-button').on('click', function (e) {
             e.preventDefault();
             var o      = {
                     title    : $('#blog-title').val().trim(),
@@ -133,7 +166,7 @@
                     content  : $('#summernote').code(),
                     live     : $('#blog-live input').is(':checked'),
                     open     : $('#blog-open input').is(':checked'),
-                    tags     : $('#tags-pillbox').pillbox('items').map(function ( o ) {
+                    tags     : $('#tags-pillbox').pillbox('items').map(function (o) {
                         return o.text
                     })
                 },
