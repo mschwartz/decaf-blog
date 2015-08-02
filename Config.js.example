@@ -2,7 +2,9 @@
 
 module.exports = {
     blogName   : 'Example Blog',
+    baseUrl    : 'http://localhost:9091/',  // if your blog is at http://mysite.com/ then this should be http://mysite.com/
     http: {
+        hostname: 'localhost',
         port: 9090,
         address: '0.0.0.0'
     },

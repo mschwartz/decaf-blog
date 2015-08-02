@@ -6,22 +6,22 @@
 
 require.paths.unshift('lib');
 
-var Config       = require('Config'),
-    Application  = require('decaf-jolt').Application,
-    StaticServer = require('decaf-jolt-static').StaticServer,
-    //StaticFile   = require('decaf-jolt-static').StaticFile,
-    SjsServer    = require('decaf-jolt-sjs').SjsServer,
-    SjsFile      = require('decaf-jolt-sjs').SjsFile,
-    app          = new Application(),
-    //SessionManager = require('Sessions').SessionManager,
-    md5          = require('support').md5,
-    BCrypt       = require('support').BCrypt,
-    Users        = require('Stores/Users'),
-    process      = require('process');
-
-require('models');
-
 function main() {
+    var Config       = require('Config'),
+        Application  = require('decaf-jolt').Application,
+        StaticServer = require('decaf-jolt-static').StaticServer,
+        //StaticFile   = require('decaf-jolt-static').StaticFile,
+        SjsServer    = require('decaf-jolt-sjs').SjsServer,
+        SjsFile      = require('decaf-jolt-sjs').SjsFile,
+        app          = new Application(),
+        //SessionManager = require('Sessions').SessionManager,
+        md5          = require('support').md5,
+        BCrypt       = require('support').BCrypt,
+        Users        = require('Stores/Users'),
+        process      = require('process');
+
+    require('models');
+
     app.verb('css', new StaticServer('css'));
     app.verb('js', new StaticServer('js'));
     app.verb('bower_components', new StaticServer('bower_components'));
@@ -37,6 +37,7 @@ function main() {
     app.verb('rpc', new SjsServer('rpc'));
     // pages
     app.verb('/', new SjsFile('controllers/home.sjs'));
+    app.verb('post', new SjsFile('controllers/post.sjs'));
     app.verb('login', new SjsFile('controllers/login.sjs'));
     app.verb('compose', new SjsFile('controllers/compose.sjs'));
 

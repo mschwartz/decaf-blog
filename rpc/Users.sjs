@@ -24,6 +24,7 @@ switch (req.data.method) {
     case 'logout':
         res.unsetCookie('blog_username');
         res.unsetCookie('blog_password');
+        res.send(200, { success: true });
         break;
     default:
         res.send(400, { message : 'Bad request' });

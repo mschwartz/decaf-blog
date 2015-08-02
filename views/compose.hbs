@@ -1,4 +1,168 @@
-{{>partials/header}}
+{{>blog/header}}
 <h1>Compose Blog Post</h1>
-<markdown-editor></markdown-editor>
-{{>partials/footer}}
+
+<form class="form-horizontal fuelux">
+    {{! TITLE }}
+    <div class="form-group">
+        <label for="blog-title" class="col-sm-1 control-label">Title</label>
+
+        <div class="col-sm-11">
+            <input type="text" class="form-control" id="blog-title" placeholder="Title (required)">
+        </div>
+    </div>
+
+    {{! SEO }}
+    <div class="form-group">
+        <label for="blog-seo" class="col-sm-1 control-label">SEO</label>
+
+        <div class="col-sm-11">
+            <input type="text" class="form-control" id="blog-seo" placeholder="SEO URL (required)">
+            <span class="help-block" style="margin-bottom: 0 !important">If you choose my-post as the SEO URL, then the URL to view this post will be {{baseUrl}}post/my-post</span>
+        </div>
+    </div>
+
+    {{! SUBTITLE }}
+    <div class="form-group">
+        <label for="blog-subtitle" class="col-sm-1 control-label">Subtitle</label>
+
+        <div class="col-sm-11">
+            <input type="text" class="form-control" id="blog-subtitle" placeholder="Subtitle">
+        </div>
+    </div>
+
+    {{! CATEGORY }}
+    <div class="form-group">
+        <label for="category-select" class="col-sm-1 control-label">Category</label>
+
+        <div class="col-sm-11">
+            <div class="btn-group selectlist" data-initialize="selectlist" id="category-select">
+                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" type="button">
+                    <span class="selected-label">&nbsp;</span>
+                    <span class="caret"></span>
+                    <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    {{#categories}}
+                        {{#selected}}
+                            <li data-value="{{value}}" data-selected="true"><a href="#">{{text}}</a></li>
+                        {{/selected}}
+                        {{^selected}}
+                            <li data-value="{{value}}"><a href="#">{{text}}</a></li>
+                        {{/selected}}
+                    {{/categories}}
+                </ul>
+                <input class="hidden hidden-field" name="category-select" readonly="readonly" aria-hidden="true" type="text"/>
+            </div>
+        </div>
+    </div>
+
+    {{! TAGS }}
+    <div class="form-group">
+        <label for="tags-pillbox" class="col-sm-1 control-label">Tags</label>
+
+        <div class="col-sm-11">
+            <div class="pillbox" id="tags-pillbox">
+                <ul class="clearfix pill-group">
+                    <li class="pillbox-input-wrap btn-group">
+                        <a class="pillbox-more">and <span class="pillbox-more-count"></span> more...</a>
+                        <input type="text" class="form-control dropdown-toggle pillbox-add-item" placeholder="Add tag">
+                        <button type="button" class="dropdown-toggle sr-only">
+                            <span class="caret"></span>
+                            <span class="sr-only">Toggle Dropdown</span>
+                        </button>
+                        <ul class="suggest dropdown-menu" role="menu" data-toggle="dropdown" data-flip="auto"></ul>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+
+    {{! EDITOR }}
+    <div id="summernote"></div>
+
+    {{! LIVE CHECKBOX }}
+    <div class="checkbox highlight" id="blog-live">
+        <label class="checkbox-custom highlight" data-initialize="checkbox">
+            <input class="sr-only" type="checkbox" value="live" checked="checked">
+            <span class="checkbox-label checked">Live (uncheck to save as draft)</span>
+        </label>
+    </div>
+
+    {{! OPEN CHECKBOX }}
+    <div class="checkbox highlight" id="blog-open">
+        <label class="checkbox-custom highlight" data-initialize="checkbox">
+            <input class="sr-only" type="checkbox" value="open" checked="checked">
+            <span class="checkbox-label checked">Open (uncheck to disallow new comments)</span>
+        </label>
+    </div>
+
+</form>
+<button id="save-post-button" class="btn btn-primary" style="margin-top: 10px">Save Post</button>
+<script>
+    $(document).ready(function () {
+        $('#summernote').summernote({ height : 200 });
+
+        $('#category-select').on('changed.fu.selectlist', function ( e, data ) {
+            // do something
+            console.dir(data);
+        });
+
+        $('#tags-pillbox').pillbox({
+            edit      : true,
+            onKeyDown : function ( data, callback ) {
+                console.dir(data);
+                callback([]);
+            }
+        });
+
+        $('#tags-pillbox').on('added.fu.pillbox', function () {
+            console.log('added')
+            setTimeout(function () {
+                $('#tags-pillbox input').focus();
+            }, 100)
+        });
+
+        $('#save-post-button').on('click', function ( e ) {
+            e.preventDefault();
+            var o      = {
+                    title    : $('#blog-title').val().trim(),
+                    seo      : $('#blog-seo').val().trim(),
+                    subtitle : $('#blog-subtitle').val().trim(),
+                    category : $('#category-select').selectlist('selectedItem').value,
+                    content  : $('#summernote').code(),
+                    live     : $('#blog-live input').is(':checked'),
+                    open     : $('#blog-open input').is(':checked'),
+                    tags     : $('#tags-pillbox').pillbox('items').map(function ( o ) {
+                        return o.text
+                    })
+                },
+                errors = false;
+
+            if (!o.title.length) {
+                $('#blog-title').parent().addClass('has-error');
+                errors = true;
+            }
+            else {
+                $('#blog-title').parent().removeClass('has-error');
+            }
+
+            if (!o.seo.length || o.seo.replace(/[0-9a-zA-Z-]/g, '').length) {
+                $('#blog-seo').parent().addClass('has-error');
+                errors = true;
+            }
+            else {
+                $('#blog-seo').parent().removeClass('has-error');
+            }
+
+            if (errors) {
+                return;
+            }
+
+
+            console.dir(o);
+        });
+
+    });
+</script>
+{{>blog/footer}}

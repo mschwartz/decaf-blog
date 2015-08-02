@@ -1,4 +1,7 @@
-{{>blog/header}}
+<!DOCTYPE html>
+<html lang="en">
+{{>blog/head}}
+<body>
 <div class="container">
     <div class="row">
         <div class="col-md-4 col-md-offset-4">
@@ -15,11 +18,13 @@
                             <div class="form-group">
                                 <input class="form-control" placeholder="Password" id="login-password" name="password" type="password" value="">
                             </div>
+                            {{!
                             <div class="checkbox">
                                 <label>
                                     <input name="remember" type="checkbox" value="Remember Me">Remember Me
                                 </label>
                             </div>
+                            }}
                             <!-- Change this to a button or input when using this as a form -->
                             <button id="login-button" class="btn btn-lg btn-success btn-block">Login</button>
                         </fieldset>
@@ -38,9 +43,12 @@
                 email    : $('#login-email').val(),
                 password : md5($('#login-password').val())
             },
-            success: function() {
+            success: function(response) {
                 console.log('success');
                 console.dir(arguments);
+                if (response.success) {
+                    window.location = '/';
+                }
             },
             failure: function() {
                 console.log('failure');
