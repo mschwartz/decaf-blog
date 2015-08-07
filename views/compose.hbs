@@ -30,32 +30,6 @@
         </div>
     </div>
 
-    {{! CATEGORY }}
-    <div class="form-group">
-        <label for="category-select" class="col-sm-1 control-label">Category</label>
-
-        <div class="col-sm-11">
-            <div class="btn-group selectlist" data-initialize="selectlist" id="category-select">
-                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" type="button">
-                    <span class="selected-label">&nbsp;</span>
-                    <span class="caret"></span>
-                    <span class="sr-only">Toggle Dropdown</span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                    {{#categories}}
-                        {{#selected}}
-                            <li data-value="{{value}}" data-selected="true"><a href="#">{{text}}</a></li>
-                        {{/selected}}
-                        {{^selected}}
-                            <li data-value="{{value}}"><a href="#">{{text}}</a></li>
-                        {{/selected}}
-                    {{/categories}}
-                </ul>
-                <input class="hidden hidden-field" name="category-select" readonly="readonly" aria-hidden="true" type="text"/>
-            </div>
-        </div>
-    </div>
-
     {{! TAGS }}
     <div class="form-group">
         <label for="tags-pillbox" class="col-sm-1 control-label">Tags</label>
@@ -112,25 +86,24 @@
 </form>
 <script>
     $(document).ready(function () {
+        {{!-- resize summernote on window resize --}}
         function resize() {
-            console.log('resize');
+            // found this code: https://github.com/summernote/summernote/blob/5672e5dc347ed9be45e0ec278f7040d2ee20dee1/src/js/module/Fullscreen.js
             var $noteEditor   = $('.note-editor'),
-                $codable = $('.note-codable'),
-                $editable = $('.note-editable'),
-                $toolbar = $('.note-toolbar'),
+                $codable      = $('.note-codable'),
+                $editable     = $('.note-editable'),
+                $toolbar      = $('.note-toolbar'),
                 $footerBottom = $('#footer-bottom'),
                 editorHeight  = $(window).height() - $noteEditor.position().top - $footerBottom.height() - $toolbar.height() - 125; //  - $footerBottom.position().top;
 
-//            $noteEditor.height(editorHeight);
             $codable.height(editorHeight);
             $editable.height(editorHeight);
-
-//            $summernote.summernote({ height : editorHeight });
         }
 
         $(window).on('resize', resize);
 
-        var $summernote   = $('#summernote'),
+        var $tagsPillbox  = $('#tags-pillbox'),
+            $summernote   = $('#summernote'),
             $footerBottom = $('#footer-bottom'),
             editorHeight  = $(window).height() - $summernote.position().top - $footerBottom.height() - 125; //  - $footerBottom.position().top;
 
@@ -141,16 +114,42 @@
             console.dir(data);
         });
 
-        $('#tags-pillbox').pillbox({
-            edit      : true,
-            onKeyDown : function (data, callback) {
-                console.dir(data);
-                callback([]);
+        var pillboxTypeahead = new DelayedTask(function ($pillbox, callback) {
+            var me = this;
+
+            if ($pillbox) {
+                var val = $pillbox.val().trim();
+                if (val.length) {
+                    rpc('Tags.list', {
+                        params  : {
+                            pattern : val
+                        },
+                        success : function (response) {
+                            if (me.handle) {
+                                var data = [];
+                                $.each(response.list, function (item) {
+                                    data.push({
+                                        text : item.tagName
+                                    });
+                                });
+                                callback({ data : data });
+                            }
+                        }
+                    })
+                }
             }
         });
 
-        $('#tags-pillbox').on('added.fu.pillbox', function () {
-            console.log('added')
+        $tagsPillbox.pillbox({
+            edit      : true,
+            onKeyDown : function (data, callback) {
+                pillboxTypeahead.defer(200, $(data.event.currentTarget), callback);
+            }
+        });
+
+        $tagsPillbox.on('added.fu.pillbox', function (e, data) {
+            console.log('added ', arguments);
+            pillboxTypeahead.cancel();
             setTimeout(function () {
                 $('#tags-pillbox input').focus();
             }, 100)
@@ -191,7 +190,6 @@
             if (errors) {
                 return;
             }
-
 
             console.dir(o);
         });
