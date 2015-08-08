@@ -49,6 +49,13 @@
                 if (response.success) {
                     window.location = '/';
                 }
+                else {
+                    BootstrapDialog.alert({
+                        type: BootstrapDialog.TYPE_DANGER,
+                        title: 'Errors',
+                        message: response.message
+                    });
+                }
             },
             failure: function() {
                 console.log('failure');

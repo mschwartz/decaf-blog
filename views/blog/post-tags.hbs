@@ -1,0 +1,8 @@
+{{#tags.length}}
+    <div class="tags">
+        <i class="glyphicon glyphicon-tags"></i> <strong>Tags: </strong>
+        {{#tags}}
+            <a href="/tags/{{name}}">{{name}}</a>{{^last}},{{/last}}
+        {{/tags}}
+    </div>
+{{/tags.length}}

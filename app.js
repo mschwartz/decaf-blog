@@ -6,6 +6,8 @@
 
 require.paths.unshift('lib');
 
+require('models');
+
 function main() {
     var Config       = require('Config'),
         Application  = require('decaf-jolt').Application,
@@ -20,7 +22,6 @@ function main() {
         Users        = require('Stores/Users'),
         process      = require('process');
 
-    require('models');
 
     app.verb('css', new StaticServer('css'));
     app.verb('js', new StaticServer('js'));

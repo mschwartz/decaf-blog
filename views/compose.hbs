@@ -86,7 +86,9 @@
 </form>
 <script>
     $(document).ready(function () {
-        {{!-- resize summernote on window resize --}}
+        {{!--
+           --  resize summernote on window resize
+           --}}
         function resize() {
             // found this code: https://github.com/summernote/summernote/blob/5672e5dc347ed9be45e0ec278f7040d2ee20dee1/src/js/module/Fullscreen.js
             var $noteEditor   = $('.note-editor'),
@@ -102,6 +104,9 @@
 
         $(window).on('resize', resize);
 
+        {{!--
+           -- initialize sumemrnote
+           --}}
         var $tagsPillbox  = $('#tags-pillbox'),
             $summernote   = $('#summernote'),
             $footerBottom = $('#footer-bottom'),
@@ -109,11 +114,9 @@
 
         $summernote.summernote({ height : editorHeight });
 
-        $('#category-select').on('changed.fu.selectlist', function (e, data) {
-            // do something
-            console.dir(data);
-        });
-
+        {{!--
+           -- Tags Pillbox
+           --}}
         var pillboxTypeahead = new DelayedTask(function ($pillbox, callback) {
             var me = this;
 
@@ -155,25 +158,29 @@
             }, 100)
         });
 
+        {{!--
+           -- SUBMIT
+           --}}
         $('#save-post-button').on('click', function (e) {
             e.preventDefault();
             var o      = {
-                    title    : $('#blog-title').val().trim(),
-                    seo      : $('#blog-seo').val().trim(),
-                    subtitle : $('#blog-subtitle').val().trim(),
-                    category : $('#category-select').selectlist('selectedItem').value,
-                    content  : $('#summernote').code(),
-                    live     : $('#blog-live input').is(':checked'),
-                    open     : $('#blog-open input').is(':checked'),
-                    tags     : $('#tags-pillbox').pillbox('items').map(function (o) {
+                    title         : $('#blog-title').val().trim(),
+                    seo           : $('#blog-seo').val().trim(),
+                    subtitle      : $('#blog-subtitle').val().trim(),
+                    category      : $('#category-select').selectlist('selectedItem').value,
+                    content       : $('#summernote').code(),
+                    live          : $('#blog-live input').is(':checked'),
+                    open          : $('#blog-open input').is(':checked'),
+                    tags          : $('#tags-pillbox').pillbox('items').map(function (o) {
                         return o.text
-                    })
+                    }),
+                    contentFormat : 'html'
                 },
-                errors = false;
+                errors = [];
 
             if (!o.title.length) {
                 $('#blog-title').parent().addClass('has-error');
-                errors = true;
+                errors.push('<li>Title is required</li>');
             }
             else {
                 $('#blog-title').parent().removeClass('has-error');
@@ -181,17 +188,47 @@
 
             if (!o.seo.length || o.seo.replace(/[0-9a-zA-Z-]/g, '').length) {
                 $('#blog-seo').parent().addClass('has-error');
-                errors = true;
+                errors.push('<li>SEO has invalid characters in it.  Only letters, numbers, and dash/hyphens allowed.</li>');
             }
             else {
                 $('#blog-seo').parent().removeClass('has-error');
             }
 
-            if (errors) {
+            if (errors.length) {
+                BootstrapDialog.alert({
+                    type: BootstrapDialog.TYPE_DANGER,
+                    title: 'Errors',
+                    message: '<ul>' + errors.join('\n') + '</ul>'
+                });
                 return;
             }
 
-            console.dir(o);
+//            console.dir(o);
+            $.blockUI();
+            rpc('Blog.save', {
+                params  : {
+                    post : o
+                },
+                success : function (o) {
+                    $.unblockUI();
+                    if (o.success) {
+                        BootstrapDialog.alert({
+                            title    : 'Success!',
+                            message  : 'Post created',
+                            callback : function () {
+                                window.location.href = '/post/' + o.post.seo
+                            }
+                        });
+                    }
+                    else {
+                        BootstrapDialog.alert({
+                            type    : BootstrapDialog.TYPE_DANGER,
+                            title   : 'Error',
+                            message : o.message
+                        });
+                    }
+                }
+            })
         });
 
     });

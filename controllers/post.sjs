@@ -1,13 +1,16 @@
 /*global req, res */
 
-var Page = require('Page').BlogPage,
-page = new Page(req, res);
+var BlogPosts = require('Stores/BlogPosts'),
+    Page      = require('Page').BlogPage,
+    page      = new Page(req, res);
 
+var post = BlogPosts.getBySEO(req.args[ 0 ]);
+
+console.dir({ post : post });
 page.render('post', {
-    title: 'test blog post title 1',
-    subtitle: 'test blog post subtitle 1',
-    seo: 'post1',
-    creatorInfo: { userId: 1, displayName: 'Mike Schwartz '},
-    createdInfo: { date: 'September 24, 2014' },
-    content: 'this is a blog post!'
+    breadcrumb : [
+        { active : false, text : 'Home', url : '/' },
+        { active : true, text : post.title }
+    ],
+    post       : post
 });

@@ -5,7 +5,8 @@
         <h3 class="post-subtitle">{{subtitle}}</h3>
         {{/subtitle}}
     </a>
-    <p class="post-meta">Posted by <a href="/author/{{creatorInfo.userId}}">{{creatorInfo.displayName}}</a> on {{createdInfo.date}}</p>
+    <p class="post-meta">Posted by <a href="/author/{{creatorInfo.userId}}/{{creatorInfo.displayName}}">{{creatorInfo.displayName}}</a>  <span class="moment">{{created}}</span></p>
+    {{>blog/post-tags}}
     {{^last}}
     <hr>
     {{/last}}

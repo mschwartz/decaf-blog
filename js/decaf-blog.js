@@ -2,7 +2,12 @@
  * Created by mschwartz on 8/1/15.
  */
 
-function rpc(method, config, callback) {
+/**
+ *
+ * @param method
+ * @param config
+ */
+function rpc(method, config) {
     var service = method.split('.');
 
     config = config || {};
@@ -76,3 +81,11 @@ DelayedTask.prototype.defer = function(timeout) {
         me.handle = null;
     }, timeout);
 };
+
+$(document).ready(function() {
+    $('.moment').each(function(idx, el) {
+        el = $(el);
+        console.dir(el.html())
+        el.html(moment(parseInt(el.html(), 10) * 1000).calendar());
+    });
+});
