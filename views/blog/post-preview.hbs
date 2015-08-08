@@ -2,12 +2,17 @@
     <a href="/post/{{seo}}">
         <h2 class="post-title">{{title}}</h2>
         {{#subtitle}}
-        <h3 class="post-subtitle">{{subtitle}}</h3>
+            <h3 class="post-subtitle">{{subtitle}}</h3>
         {{/subtitle}}
+        <i class="glyphicon glyphicon-comment"></i> {{commentCount}} comments<br/>
     </a>
-    <p class="post-meta">Posted by <a href="/author/{{creatorInfo.userId}}/{{creatorInfo.displayName}}">{{creatorInfo.displayName}}</a>  <span class="moment">{{created}}</span></p>
+
+    <p class="post-meta">Posted by
+        <a href="/author/{{creatorInfo.userId}}/{{creatorInfo.displayName}}">{{creatorInfo.displayName}}</a>
+        <span class="moment">{{created}}</span><br/>
+    </p>
     {{>blog/post-tags}}
     {{^last}}
-    <hr>
+        <hr>
     {{/last}}
 </article>

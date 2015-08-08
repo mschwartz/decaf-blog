@@ -2,7 +2,7 @@
     <div class="tags">
         <i class="glyphicon glyphicon-tags"></i> <strong>Tags: </strong>
         {{#tags}}
-            <a href="/tags/{{name}}">{{name}}</a>{{^last}},{{/last}}
+            <a class="btn btn-primary btn-xs tag-button" href="/tags/{{name}}">{{name}}</a>
         {{/tags}}
     </div>
 {{/tags.length}}
