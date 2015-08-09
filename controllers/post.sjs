@@ -4,13 +4,21 @@ var BlogPosts = require('Stores/BlogPosts'),
     Page      = require('Page').BlogPage,
     page      = new Page(req, res);
 
-var post = BlogPosts.getBySEO(req.args[ 0 ]);
+var post    = BlogPosts.getBySEO(req.args[ 0 ]),
+    isAdmin = req.user.userGroupId === 1;
 
-console.dir({ post : post });
+console.dir(req.user);
+if ( isAdmin ) {
+    page.addStylesheet('/bower_components/summernote/dist/summernote.css');
+    page.addScript('/bower_components/summernote/dist/summernote.min.js');
+}
+
 page.render('post', {
-    breadcrumb : [
+    breadcrumb  : [
         { active : false, text : 'Home', url : '/' },
         { active : true, text : post.title }
     ],
-    post       : post
+    post        : post,
+    isAdmin     : isAdmin,
+    postEncoded : JSON.stringify(post)
 });
