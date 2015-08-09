@@ -1,0 +1,111 @@
+{{>blog/header}}
+{{#isAdmin}}
+    <script>
+        var isAdmin = true,
+                post = {{{postEncoded}}};
+    </script>
+{{/isAdmin}}
+{{#post}}
+    <h1>{{title}}</h1>
+    {{#subtitle}}
+        <h2>{{subtitle}}</h2>
+    {{/subtitle}}
+    <h3>Posted By {{creatorInfo.displayName}} <span class="moment">{{created}}</span></h3>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="post-content">
+                {{{content}}}
+            </div>
+            {{#edited}}
+                <p><em>Last updated <span class="moment">{{edited}}</span> by {{editorInfo.displayName}}</em></p>
+            {{/edited}}
+            {{>blog/post-tags}}
+        </div>
+        <div class="col-md-3">
+            {{>blog/search-widget}}
+            {{>blog/social-widget}}
+            {{#isAdmin}}
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Admin
+                    </div>
+                    <div class="panel-body">
+                        <div>
+                            <button class="btn btn-primary" id="edit-save-button">Edit</button>
+                            <button class="btn btn-danger hide" id="edit-cancel-button">Cancel</button>
+                            <a href="/compose" class="pull-right btn btn-primary" id="edit-new-button">New Post</a>
+                        </div>
+                        <div style="padding-top: 10px">
+                            <input id="edit-published-checkbox" type="checkbox" checked="{{post.published}}" data-size="small" data-on-text="Live" data-on-color="success" data-off-text="Draft" data-off-color="danger">
+                            <input id="edit-open-checkbox" type="checkbox" checked="{{post.open}}" data-size="small" data-on-text="Open" data-on-color="success" data-off-text="Closed" data-off-color="danger">
+                        </div>
+                    </div>
+                </div>
+            {{/isAdmin}}
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            console.log('post ready');
+            {{#isAdmin}}
+                var isEditing = false;
+
+                $('#edit-published-checkbox').bootstrapSwitch();
+                $('#edit-open-checkbox').bootstrapSwitch();
+
+                $('#edit-cancel-button').on('click', function (e) {
+                    var $postContent = $('.post-content');
+
+                    e.preventDefault();
+                    isEditing = false;
+                    $postContent.destroy();
+                    $('#edit-cancel-button').addClass('hide');
+                    $('#edit-save-button').html('Edit');
+                    $('#edit-new-button').removeClass('hide');
+                    $postContent.html(post.content);
+                });
+
+                $('#edit-save-button').on('click', function (e) {
+                    var $postContent = $('.post-content');
+                    console.dir(this)
+                    e.preventDefault();
+                    if (isEditing) {
+                        post.content = $postContent.code();
+                        $.blockUI();
+                        rpc('Blog.save', {
+                            params  : {
+                                post : post
+                            },
+                            success : function (o) {
+                                $.unblockUI();
+                                if (o.success) {
+                                    post = o.post;
+                                    $postContent.destroy();
+                                    $(this).html('Edit');
+                                    $('#edit-cancel-button').addClass('hide');
+                                    isEditing = false;
+                                    BootstrapDialog.alert({
+                                        title    : 'Success!',
+                                        message  : 'Post updated',
+                                        callback : function () {
+//                                            window.location.href = '/post/' + o.post.seo
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        $postContent.summernote();
+                        $('#edit-new-button').addClass('hide');
+                        $('#edit-cancel-button').removeClass('hide');
+                        $(this).html('Save');
+                        isEditing = true;
+                    }
+                });
+//                $('img').addClass('img-responsive');
+            {{/isAdmin}}
+        });
+    </script>
+{{/post}}
+{{>blog/footer}}

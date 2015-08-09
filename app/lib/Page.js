@@ -5,7 +5,7 @@
 /*global require, module, sync */
 var Config          = require('Config'),
     TemplateManager = require('decaf-hoganjs').TemplateManager,
-    viewManager     = new TemplateManager('views'),
+    viewManager     = new TemplateManager('app/views'),
     Users           = require('Stores/Users');
 
 function Page(req, res) {
@@ -15,6 +15,7 @@ function Page(req, res) {
     // add url of style sheets to be added to page
     this._css = [
         '/bower_components/bootstrap/dist/css/bootstrap.min.css',
+        '/bower_components/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css',
         '/bower_components/fuelux/dist/css/fuelux.min.css',
         '/bower_components/bootstrap3-dialog/dist/css/bootstrap-dialog.min.css',
         '/bower_components/font-awesome/css/font-awesome.min.css',
@@ -23,6 +24,7 @@ function Page(req, res) {
     // add url to scripts to be added to page
     this._scripts = [
         '/bower_components/bootstrap/dist/js/bootstrap.min.js',
+        '/bower_components/bootstrap-switch/dist/js/bootstrap-switch.min.js',
         '/bower_components/fuelux/dist/js/fuelux.js',
         '/bower_components/bootstrap3-dialog/dist/js/bootstrap-dialog.min.js',
         '/bower_components/blockUI/jquery.blockUI.js',

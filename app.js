@@ -4,7 +4,8 @@
 
 /*global require, global */
 
-require.paths.unshift('lib');
+require.paths.unshift('app');
+require.paths.unshift('app/lib');
 
 require('models');
 
@@ -23,8 +24,8 @@ function main() {
         process      = require('process');
 
 
-    app.verb('css', new StaticServer('css'));
-    app.verb('js', new StaticServer('js'));
+    app.verb('css', new StaticServer('app/css'));
+    app.verb('js', new StaticServer('app/js'));
     app.verb('bower_components', new StaticServer('bower_components'));
 
     app.verb('md5.js', function (req, res) {
@@ -35,12 +36,12 @@ function main() {
     });
 
     // RPC
-    app.verb('rpc', new SjsServer('rpc'));
+    app.verb('rpc', new SjsServer('app/rpc'));
     // pages
-    app.verb('/', new SjsFile('controllers/home.sjs'));
-    app.verb('post', new SjsFile('controllers/post.sjs'));
-    app.verb('login', new SjsFile('controllers/login.sjs'));
-    app.verb('compose', new SjsFile('controllers/compose.sjs'));
+    app.verb('/', new SjsFile('app/controllers/home.sjs'));
+    app.verb('post', new SjsFile('app/controllers/post.sjs'));
+    app.verb('login', new SjsFile('app/controllers/login.sjs'));
+    app.verb('compose', new SjsFile('app/controllers/compose.sjs'));
 
     app.on('beginRequest', function (req, res) {
         req.user = null;

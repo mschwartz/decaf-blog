@@ -7,11 +7,15 @@ var BlogPosts = require('Stores/BlogPosts'),
 var post    = BlogPosts.getBySEO(req.args[ 0 ]),
     isAdmin = req.user.userGroupId === 1;
 
-console.dir(req.user);
 if ( isAdmin ) {
     page.addStylesheet('/bower_components/summernote/dist/summernote.css');
     page.addScript('/bower_components/summernote/dist/summernote.min.js');
 }
+
+if (post.edited === post.created) {
+    delete post.edited;
+}
+console.dir(post);
 
 page.render('post', {
     breadcrumb  : [

@@ -35,7 +35,7 @@ Schema.add({
     ],
     onCreate   : function () {
         Schema.putOne('UserGroups', {
-            userGroupName : 'Administrator',
+            userGroupName : 'Administrators',
             prefix        : '',
             suffix        : ''
         });

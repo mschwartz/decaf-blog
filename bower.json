@@ -32,6 +32,7 @@
     "summernote": "~0.6.15",
     "blockUI": "*",
     "moment": "~2.10.6",
-    "font-awesome": "~4.4.0"
+    "font-awesome": "4.2.x",
+    "bootstrap-switch": "~3.3.2"
   }
 }

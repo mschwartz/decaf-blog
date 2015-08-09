@@ -62,31 +62,21 @@
     {{! EDITOR }}
     <div id="summernote"></div>
 
-    <div class="row">
+    <div class="row" style="padding-top: 10px">
         <div class="col-sm-9">
             <div class="pull-right">
-                {{! LIVE CHECKBOX }}
-                <div class="checkbox highlight" id="blog-live">
-                    <label class="checkbox-custom checkbox-inline highlight" data-initialize="checkbox">
-                        <input class="sr-only" type="checkbox" value="live" checked="checked">
-                        <span class="checkbox-label checked">Live (uncheck to save as draft)</span>
-                    </label>
-                </div>
-
-                {{! OPEN CHECKBOX }}
-                <div class="checkbox highlight" id="blog-open">
-                    <label class="checkbox-custom checkbox-inline highlight" data-initialize="checkbox">
-                        <input class="sr-only" type="checkbox" value="open" checked="checked">
-                        <span class="checkbox-label checked">Open (uncheck to disallow new comments)</span>
-                    </label>
-                </div>
+                <input id="blog-live" type="checkbox" checked="true" data-size="normal" data-on-text="Live" data-on-color="success" data-off-text="Draft" data-off-color="danger">
+                <input id="blog-open" type="checkbox" checked="true" data-size="normal" data-on-text="Open" data-on-color="success" data-off-text="Closed" data-off-color="danger">
             </div>
         </div>
         <div class="col-sm-3">
             <div class="pull-right">
-                <button id="save-post-button" class="btn btn-primary" style="margin-top: 10px">Save Post</button>
-                <button id="preview-post-button" class="btn btn-default" style="margin-top: 10px">Preview Post</button>
-                <button id="cancel-post-button" class="btn btn-danger" style="margin-top: 10px">Cancel Post</button>
+                <!--<input id="edit-published-checkbox" type="checkbox" checked="true" data-size="small" data-on-text="Live" data-on-color="success" data-off-text="Draft" data-off-color="danger">-->
+                <!--<input id="edit-open-checkbox" type="checkbox" checked="true" data-size="small" data-on-text="Open" data-on-color="success" data-off-text="Closed" data-off-color="danger">-->
+                <!--<br/>-->
+                <button id="save-post-button" class="btn btn-primary">Save Post</button>
+                <button id="preview-post-button" class="btn btn-default">Preview Post</button>
+                <button id="cancel-post-button" class="btn btn-danger">Cancel Post</button>
             </div>
         </div>
     </div>
@@ -121,7 +111,10 @@
 
         $summernote.summernote({ height : editorHeight });
 
-        $('#blog-seo-generate-button').on('click', function ( e ) {
+        $('#blog-live').bootstrapSwitch();
+        $('#blog-open').bootstrapSwitch();
+
+        $('#blog-seo-generate-button').on('click', function (e) {
             var title = $('#blog-title').val();
 
             title = title.replace(/\s+/g, '-');
@@ -133,20 +126,20 @@
         {{!--
            -- Tags Pillbox
            --}}
-        var pillboxTypeahead = new DelayedTask(function ( $pillbox, callback ) {
+        var pillboxTypeahead = new DelayedTask(function ($pillbox, callback) {
             var me = this;
 
-            if ( $pillbox ) {
+            if ($pillbox) {
                 var val = $pillbox.val().trim();
-                if ( val.length ) {
+                if (val.length) {
                     rpc('Tags.list', {
                         params  : {
                             pattern : val
                         },
-                        success : function ( response ) {
-                            if ( me.handle ) {
+                        success : function (response) {
+                            if (me.handle) {
                                 var data = [];
-                                $.each(response.list, function ( item ) {
+                                $.each(response.list, function (item) {
                                     data.push({
                                         text : item.tagName
                                     });
@@ -161,12 +154,12 @@
 
         $tagsPillbox.pillbox({
             edit      : true,
-            onKeyDown : function ( data, callback ) {
+            onKeyDown : function (data, callback) {
                 pillboxTypeahead.defer(200, $(data.event.currentTarget), callback);
             }
         });
 
-        $tagsPillbox.on('added.fu.pillbox', function ( e, data ) {
+        $tagsPillbox.on('added.fu.pillbox', function (e, data) {
             console.log('added ', arguments);
             pillboxTypeahead.cancel();
             setTimeout(function () {
@@ -177,7 +170,7 @@
         {{!--
            -- SUBMIT
            --}}
-        $('#save-post-button').on('click', function ( e ) {
+        $('#save-post-button').on('click', function (e) {
             e.preventDefault();
             var o      = {
                     title         : $('#blog-title').val().trim(),
@@ -185,16 +178,16 @@
                     subtitle      : $('#blog-subtitle').val().trim(),
                     category      : $('#category-select').selectlist('selectedItem').value,
                     content       : $('#summernote').code(),
-                    live          : $('#blog-live input').is(':checked'),
-                    open          : $('#blog-open input').is(':checked'),
-                    tags          : $('#tags-pillbox').pillbox('items').map(function ( o ) {
-                        return o.text
+                    live          : $('#blog-live').bootstrapSwitch('state'),
+                    open          : $('#blog-open').bootstrapSwitch('state'),
+                    tags          : $('#tags-pillbox').pillbox('items').map(function (o) {
+                        return { name : o.text };
                     }),
                     contentFormat : 'html'
                 },
                 errors = [];
 
-            if ( !o.title.length ) {
+            if (!o.title.length) {
                 $('#blog-title').parent().addClass('has-error');
                 errors.push('<li>Title is required</li>');
             }
@@ -202,7 +195,7 @@
                 $('#blog-title').parent().removeClass('has-error');
             }
 
-            if ( !o.seo.length || o.seo.replace(/[0-9a-zA-Z-]/g, '').length ) {
+            if (!o.seo.length || o.seo.replace(/[0-9a-zA-Z-]/g, '').length) {
                 $('#blog-seo').parent().addClass('has-error');
                 errors.push('<li>SEO has invalid characters in it.  Only letters, numbers, and dash/hyphens allowed.</li>');
             }
@@ -210,7 +203,7 @@
                 $('#blog-seo').parent().removeClass('has-error');
             }
 
-            if ( errors.length ) {
+            if (errors.length) {
                 BootstrapDialog.alert({
                     type    : BootstrapDialog.TYPE_DANGER,
                     title   : 'Errors',
@@ -225,9 +218,9 @@
                 params  : {
                     post : o
                 },
-                success : function ( o ) {
+                success : function (o) {
                     $.unblockUI();
-                    if ( o.success ) {
+                    if (o.success) {
                         BootstrapDialog.alert({
                             title    : 'Success!',
                             message  : 'Post created',

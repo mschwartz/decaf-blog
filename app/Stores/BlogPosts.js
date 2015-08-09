@@ -26,9 +26,9 @@ module.exports = {
             blogPostId : post.blogPostId
         });
         decaf.each(example.tags || [], function (tag) {
-            var existing = Schema.findOne('Tags', { tagName : tag });
+            var existing = Schema.findOne('Tags', { tagName : tag.name });
             if (!existing.tagId) {
-                existing = Schema.putOne('Tags', { tagName : tag });
+                existing = Schema.putOne('Tags', { tagName : tag.name });
             }
             Schema.putOne('BlogPostTags', { tagId : existing.tagId, blogPostId : post.blogPostId });
         });
@@ -40,6 +40,7 @@ module.exports = {
     decorate : function (record) {
         var tags = [];
         decaf.each(SQL.getDataRows('SELECT * FROM BlogPostTags,Tags WHERE Tags.tagId=BlogPostTags.tagId AND BlogPostTags.blogPostId=' + SQL.quote(record.blogPostId)), function(tag) {
+            console.dir(tag);
             tags.push({ name: tag.tagName, last: false });
         });
         if (tags.length) {
