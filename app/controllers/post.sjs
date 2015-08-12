@@ -5,7 +5,7 @@ var BlogPosts = require('Stores/BlogPosts'),
     page      = new Page(req, res);
 
 var post    = BlogPosts.getBySEO(req.args[ 0 ]),
-    isAdmin = req.user.userGroupId === 1;
+    isAdmin = req.user && req.user.userGroupId === 1;
 
 if ( isAdmin ) {
     page.addStylesheet('/bower_components/summernote/dist/summernote.css');

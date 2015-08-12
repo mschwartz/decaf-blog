@@ -137,15 +137,15 @@
                             pattern : val
                         },
                         success : function (response) {
-                            if (me.handle) {
+//                            if (me.handle) {
                                 var data = [];
-                                $.each(response.list, function (item) {
+                                $.each(response.list, function (ndx, item) {
                                     data.push({
                                         text : item.tagName
                                     });
                                 });
                                 callback({ data : data });
-                            }
+//                            }
                         }
                     })
                 }
