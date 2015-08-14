@@ -19,11 +19,11 @@
             {{#edited}}
                 <p><em>Last updated <span class="moment">{{edited}}</span> by {{editorInfo.displayName}}</em></p>
             {{/edited}}
-            {{>blog/post-tags}}
         </div>
         <div class="col-md-3">
             {{>blog/search-widget}}
             {{>blog/social-widget}}
+            {{>blog/tags-widget}}
             {{#isAdmin}}
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -35,7 +35,7 @@
                             <button class="btn btn-danger hide" id="edit-cancel-button">Cancel</button>
                             <a href="/compose" class="pull-right btn btn-primary" id="edit-new-button">New Post</a>
                         </div>
-                        <div style="padding-top: 10px">
+                        <div id="edit-options-buttons" style="padding-top: 10px;" class="hide">
                             <input id="edit-published-checkbox" type="checkbox" checked="{{post.published}}" data-size="small" data-on-text="Live" data-on-color="success" data-off-text="Draft" data-off-color="danger">
                             <input id="edit-open-checkbox" type="checkbox" checked="{{post.open}}" data-size="small" data-on-text="Open" data-on-color="success" data-off-text="Closed" data-off-color="danger">
                         </div>
@@ -61,6 +61,7 @@
                     $postContent.destroy();
                     $('#edit-cancel-button').addClass('hide');
                     $('#edit-save-button').html('Edit');
+                    $('#edit-options-buttons').addClass('hide');
                     $('#edit-new-button').removeClass('hide');
                     $postContent.html(post.content);
                 });
@@ -97,6 +98,7 @@
                     }
                     else {
                         $postContent.summernote();
+                        $('#edit-options-buttons').removeClass('hide');
                         $('#edit-new-button').addClass('hide');
                         $('#edit-cancel-button').removeClass('hide');
                         $(this).html('Save');

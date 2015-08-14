@@ -83,9 +83,9 @@ DelayedTask.prototype.defer = function(timeout) {
 };
 
 $(document).ready(function() {
+    console.log('decaf-blog ready');
     $('.moment').each(function(idx, el) {
         el = $(el);
-        console.dir(el.html())
         el.html(moment(parseInt(el.html(), 10) * 1000).calendar());
     });
 });
