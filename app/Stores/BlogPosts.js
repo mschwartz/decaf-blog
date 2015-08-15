@@ -47,10 +47,14 @@ module.exports = {
             tags[tags.length-1 ].last = true;
         }
         record.tags = tags;
+
         var user = Schema.findOne('Users', { userId: record.creator });
         record.creatorInfo = { userId: user.userId, displayName: user.displayName };
         user = Schema.findOne('Users', { userId: record.editor });
         record.editorInfo = { userId: user.userId, displayName: user.displayName };
+
+        record.comments = Schema.list('Comments', { blogPostId: record.blogPostId });
+
         return record;
     },
     getById  : function (blogPostId) {

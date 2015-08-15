@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 {{>blog/head}}
-<body>
+<body class="fuelux">
+{{#scripts}}
+    <script src="{{.}}"></script>
+{{/scripts}}
 {{>blog/navbar}}
 <div class="container-fluid">
 {{>blog/breadcrumb}}

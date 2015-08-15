@@ -1,5 +1,7 @@
 /*global req. res, require */
 
+/*global require, res, req */
+
 var Config = require('Config'),
     Page   = require('Page').BlogPage,
     page   = new Page(req, res);

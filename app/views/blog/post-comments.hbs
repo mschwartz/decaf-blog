@@ -1,0 +1,22 @@
+<h1>{{comments.count}} Comments</h1>
+{{#comments.count}}
+    <div class="post-comment">
+        <p>By {{creatorInfo.displayName}} <span class="moment">{{created}}</span></p>
+
+        <p>{{content}}</p>
+    </div>
+{{/comments.count}}
+<form>
+    <div class="form-group">
+        <label for="comment-text">Comment on this post:</label>
+        <textarea rows="6" class="form-control" id="comment-body" placeholder="Enter your comment here"></textarea>
+    </div>
+    <span class="pull-right">
+        <button id="post-comment-button" class="btn btn-primary">Post Comment</button>
+    </span>
+</form>
+<script>
+    $('#post-comment-button').on('click', function(e) {
+        e.preventDefault();
+    });
+</script>

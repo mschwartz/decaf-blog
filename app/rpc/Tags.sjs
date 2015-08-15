@@ -3,12 +3,16 @@
 var Tags   = require('Stores/Tags'),
     params = req.params;
 
-debugger
-switch (req.data.method) {
-    case 'list':
+var methods = {
+    list: function() {
         res.send(200, Tags.list({ tagName : '%' + params.pattern + '%' }));
-        break;
-    default:
-        res.send(404, { message : 'No such method' });
-        break;
+    }
+};
+
+var method = methods[ req.data.method ];
+if (method) {
+    method(req.data.params);
+}
+else {
+    res.send(400, { message : 'Bad request' });
 }

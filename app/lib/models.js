@@ -48,6 +48,31 @@ Schema.add({
 });
 
 Schema.add({
+    name       : 'UserStats',
+    primaryKey : 'userId',
+    fields     : [
+        { name : 'userId', type : 'int' },
+        { name : 'posts', type : 'int' },
+        { name : 'comments', type : 'int' },
+        { name : 'likes', type : 'int' }
+    ],
+    indexes    : [
+        'posts',
+        'comments',
+        'likes'
+    ]
+});
+
+Schema.add({
+    name       : 'UserPreferences',
+    primaryKey : 'userId',
+    fields     : [
+        { name : 'userId', type : 'int' },
+        { name : 'preferences', type : 'text' }
+    ]
+});
+
+Schema.add({
     name       : 'Users',
     primaryKey : 'userId',
     fields     : [
@@ -85,6 +110,8 @@ Schema.add({
 
             admin.creator = admin.editor = admin.userId;
             Users.putOne(admin);
+            Schema.putOne('UserPreferences', { userId: admin.userId });
+            Schema.putOne('UserStats', { userId: admin.userId });
             SQL.commit();
         }
         catch (e) {
@@ -93,31 +120,6 @@ Schema.add({
             throw e;
         }
     }
-});
-
-Schema.add({
-    name       : 'UserStats',
-    primaryKey : 'userId',
-    fields     : [
-        { name : 'userId', type : 'int' },
-        { name : 'posts', type : 'int' },
-        { name : 'comments', type : 'int' },
-        { name : 'likes', type : 'int' }
-    ],
-    indexes    : [
-        'posts',
-        'comments',
-        'likes'
-    ]
-});
-
-Schema.add({
-    name       : 'UserPreferences',
-    primaryKey : 'userId',
-    fields     : [
-        { name : 'userId', type : 'int' },
-        { name : 'preferences', type : 'text' }
-    ]
 });
 
 

@@ -3,6 +3,7 @@
     <script>
         var isAdmin = true,
                 post = {{{postEncoded}}};
+        $.blockUI();
     </script>
 {{/isAdmin}}
 {{#post}}
@@ -19,6 +20,7 @@
             {{#edited}}
                 <p><em>Last updated <span class="moment">{{edited}}</span> by {{editorInfo.displayName}}</em></p>
             {{/edited}}
+            {{>blog/post-comments}}
         </div>
         <div class="col-md-3">
             {{>blog/search-widget}}
@@ -30,84 +32,167 @@
                         Admin
                     </div>
                     <div class="panel-body">
-                        <div>
-                            <button class="btn btn-primary" id="edit-save-button">Edit</button>
-                            <button class="btn btn-danger hide" id="edit-cancel-button">Cancel</button>
-                            <a href="/compose" class="pull-right btn btn-primary" id="edit-new-button">New Post</a>
-                        </div>
-                        <div id="edit-options-buttons" style="padding-top: 10px;" class="hide">
-                            <input id="edit-published-checkbox" type="checkbox" checked="{{post.published}}" data-size="small" data-on-text="Live" data-on-color="success" data-off-text="Draft" data-off-color="danger">
-                            <input id="edit-open-checkbox" type="checkbox" checked="{{post.open}}" data-size="small" data-on-text="Open" data-on-color="success" data-off-text="Closed" data-off-color="danger">
-                        </div>
-                    </div>
-                </div>
+                        <form>
+                            <div>
+                                <button class="btn btn-primary" id="edit-save-button">Edit</button>
+                                <button class="btn btn-danger hide" id="edit-cancel-button">Cancel</button>
+                                <a href="/compose" class="pull-right btn btn-primary" id="edit-new-button">New Post</a>
+                            </div>
+                            <div id="edit-options-buttons" style="padding-top: 10px;" class="hide">
+                                <input id="edit-live-checkbox" type="checkbox" checked="{{post.published}}" data-size="small" data-on-text="Live" data-on-color="success" data-off-text="Draft" data-off-color="danger">
+                                <input id="edit-open-checkbox" type="checkbox" checked="{{post.open}}" data-size="small" data-on-text="Open" data-on-color="success" data-off-text="Closed" data-off-color="danger">
+                            </div>
+                            <div id="edit-tags" class="hide">
+                                <div class="form-group" style="margin-top: 5px">
+                                    <!--<label for="tags-pillbox" class="col-sm-1 control-label">Tags</label>-->
+
+                                    <div class="pillbox" id="tags-pillbox">
+                                        <ul class="clearfix pill-group">
+                                            <li class="pillbox-input-wrap btn-group">
+                                                <a class="pillbox-more">and
+                                                    <span class="pillbox-more-count"></span> more...</a>
+                                                <input type="text" class="form-control dropdown-toggle pillbox-add-item" placeholder="Add tag">
+                                                <button type="button" class="dropdown-toggle sr-only">
+                                                    <span class="caret"></span>
+                                                    <span class="sr-only">Toggle Dropdown</span>
+                                                </button>
+                                                <ul class="suggest dropdown-menu" role="menu" data-toggle="dropdown" data-flip="auto"></ul>
+                                            </li>
+                                        </ul>
+                                    </div>{{! pillbox }}
+                                </div>{{! form-group }}
+                            </div>{{! edit-tags }}
+                        </form>
+                    </div>{{! panel-body }}
+                </div> {{! panel }}
             {{/isAdmin}}
-        </div>
-    </div>
-    <script>
-        $(document).ready(function () {
-            console.log('post ready');
-            {{#isAdmin}}
-                var isEditing = false;
+        </div> {{! col-md-3 }}
+        <script>
+            $(document).ready(function () {
+                console.log('post ready');
+                {{#isAdmin}}
+                    var $tagsPillbox = $('#tags-pillbox'),
+                        isEditing    = false;
 
-                $('#edit-published-checkbox').bootstrapSwitch();
-                $('#edit-open-checkbox').bootstrapSwitch();
-
-                $('#edit-cancel-button').on('click', function (e) {
-                    var $postContent = $('.post-content');
-
-                    e.preventDefault();
-                    isEditing = false;
-                    $postContent.destroy();
-                    $('#edit-cancel-button').addClass('hide');
-                    $('#edit-save-button').html('Edit');
-                    $('#edit-options-buttons').addClass('hide');
-                    $('#edit-new-button').removeClass('hide');
-                    $postContent.html(post.content);
-                });
-
-                $('#edit-save-button').on('click', function (e) {
-                    var $postContent = $('.post-content');
-                    console.dir(this)
-                    e.preventDefault();
-                    if (isEditing) {
-                        post.content = $postContent.code();
-                        $.blockUI();
-                        rpc('Blog.save', {
-                            params  : {
-                                post : post
-                            },
-                            success : function (o) {
-                                $.unblockUI();
-                                if (o.success) {
-                                    post = o.post;
-                                    $postContent.destroy();
-                                    $(this).html('Edit');
-                                    $('#edit-cancel-button').addClass('hide');
-                                    isEditing = false;
-                                    BootstrapDialog.alert({
-                                        title    : 'Success!',
-                                        message  : 'Post updated',
-                                        callback : function () {
-//                                            window.location.href = '/post/' + o.post.seo
-                                        }
-                                    });
-                                }
-                            }
-                        });
+                    function hideEditControls() {
+                        isEditing = false;
+                        $('#edit-cancel-button').addClass('hide');
+                        $('#edit-save-button').html('Edit');
+                        $('#edit-options-buttons').addClass('hide');
+                        $('#edit-new-button').removeClass('hide');
+                        $('#edit-tags').addClass('hide');
                     }
-                    else {
-                        $postContent.summernote();
+
+                    function showEditControls() {
+                        isEditing = true;
                         $('#edit-options-buttons').removeClass('hide');
                         $('#edit-new-button').addClass('hide');
                         $('#edit-cancel-button').removeClass('hide');
-                        $(this).html('Save');
-                        isEditing = true;
+                        $('#edit-save-button').html('Save');
+                        $('#edit-tags').removeClass('hide');
                     }
-                });
+
+                    var pillboxTypeahead = new DelayedTask(function ($pillbox, callback) {
+                        var me = this;
+
+                        if ($pillbox) {
+                            var val = $pillbox.val().trim();
+                            if (val.length) {
+                                rpc('Tags.list', {
+                                    params  : {
+                                        pattern : val
+                                    },
+                                    success : function (response) {
+//                            if (me.handle) {
+                                        var data = [];
+                                        $.each(response.list, function (ndx, item) {
+                                            data.push({
+                                                text : item.tagName
+                                            });
+                                        });
+                                        callback({ data : data });
+//                            }
+                                    }
+                                })
+                            }
+                        }
+                    });
+
+                    $tagsPillbox.pillbox({
+                        edit           : true,
+                        onKeyDown      : function (data, callback) {
+                            pillboxTypeahead.defer(200, $(data.event.currentTarget), callback);
+                        }
+                    });
+
+                    $tagsPillbox.pillbox('addItems', 0, post.tags.map(function (o) { return { text : o.name }}));
+
+                    $tagsPillbox.on('added.fu.pillbox', function (e, data) {
+                        console.log('added ', arguments);
+                        pillboxTypeahead.cancel();
+                        setTimeout(function () {
+                            $('#tags-pillbox input').focus();
+                        }, 100)
+                    });
+
+                    $('#edit-live-checkbox').bootstrapSwitch();
+                    $('#edit-open-checkbox').bootstrapSwitch();
+
+                    $('#edit-cancel-button').on('click', function (e) {
+                        var $postContent = $('.post-content');
+
+                        e.preventDefault();
+                        $postContent.destroy();
+                        $postContent.html(post.content);
+                        hideEditControls();
+                    });
+
+                    $('#edit-save-button').on('click', function (e) {
+                        var $postContent = $('.post-content');
+                        console.dir(this)
+                        e.preventDefault();
+                        if (isEditing) {
+                            post.content = $postContent.code();
+                            post.tags = $('#tags-pillbox').pillbox('items').map(function (o) {
+                                return {
+                                    name : o.text
+                                }
+                            });
+                            post.live = $('#edit-live-checkbox').bootstrapSwitch('state');
+                            post.open = $('#edit-open-checkbox').bootstrapSwitch('state');
+
+                            $.blockUI();
+                            rpc('Blog.save', {
+                                params  : {
+                                    post : post
+                                },
+                                success : function (o) {
+                                    $.unblockUI();
+                                    if (o.success) {
+                                        window.location.href = '/post/' + o.post.seo;
+//                                        post = o.post;
+//                                        $postContent.destroy();
+//                                        hideEditControls();
+//                                        BootstrapDialog.alert({
+//                                            title    : 'Success!',
+//                                            message  : 'Post updated',
+//                                            callback : function () {
+////                                                window.location.href = '/post/' + o.post.seo
+//                                            }
+//                                        });
+                                    }
+                                }
+                            });
+                        }
+                        else {
+                            $postContent.summernote();
+                            showEditControls();
+                        }
+                    });
 //                $('img').addClass('img-responsive');
-            {{/isAdmin}}
-        });
-    </script>
+                {{/isAdmin}}
+            });
+            $.unblockUI();
+        </script>
 {{/post}}
 {{>blog/footer}}
