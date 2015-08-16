@@ -13,17 +13,26 @@ function rpc(method, config) {
     config = config || {};
     config.method = service[1];
 
+    if (config.block !== false) {
+        $.blockUI();
+    }
     $.ajax('/rpc/' + service[0] + '.sjs', {
         type     : 'POST',
         contentType: 'application/json; charset=utf-8',
         dataType : 'json',
         data     : JSON.stringify(config),
         success  : function (data, status, xhr) {
+            if (config.block !== false) {
+                $.unblockUI();
+            }
             if (config.success) {
                 config.success(data);
             }
         },
         error    : function (jqXHR, textStatus, errorThrown) {
+            if (config.block !== false) {
+                $.unblockUI();
+            }
             var o = jqXHR.responseJSON;
             if (o && o.exception) {
                 console.log(o.exception);

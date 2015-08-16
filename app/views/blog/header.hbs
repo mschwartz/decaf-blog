@@ -2,9 +2,10 @@
 <html lang="en">
 {{>blog/head}}
 <body class="fuelux">
-{{#scripts}}
-    <script src="{{.}}"></script>
-{{/scripts}}
+{{>blog/scripts}}
 {{>blog/navbar}}
+{{^blogUser}}
+   {{>blog/login-dialog}}
+{{/blogUser}}
 <div class="container-fluid">
 {{>blog/breadcrumb}}

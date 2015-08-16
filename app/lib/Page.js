@@ -28,7 +28,8 @@ function Page(req, res) {
         '/bower_components/fuelux/dist/js/fuelux.js',
         '/bower_components/bootstrap3-dialog/dist/js/bootstrap-dialog.min.js',
         '/bower_components/blockUI/jquery.blockUI.js',
-        '/bower_components/moment/min/moment.min.js'
+        '/bower_components/moment/min/moment.min.js',
+        '/md5.js'
     ];
 
     this.renderTemplate = sync(function (tpl, o) {

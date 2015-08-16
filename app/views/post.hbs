@@ -161,13 +161,11 @@
                             post.live = $('#edit-live-checkbox').bootstrapSwitch('state');
                             post.open = $('#edit-open-checkbox').bootstrapSwitch('state');
 
-                            $.blockUI();
                             rpc('Blog.save', {
                                 params  : {
                                     post : post
                                 },
                                 success : function (o) {
-                                    $.unblockUI();
                                     if (o.success) {
                                         window.location.href = '/post/' + o.post.seo;
 //                                        post = o.post;

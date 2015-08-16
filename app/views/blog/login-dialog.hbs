@@ -1,0 +1,134 @@
+<div id="register-dialog" class="modal fade" role="dialog" area-labelledby="register-dailog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Sign Up</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="registration-field-email">Email Address</label>
+                    <input type="email" class="form-control" id="registration-field-email" placeholder="Email">
+                </div>
+                <div class="form-group">
+                    <label for="registration-field-password1">Password</label>
+                    <input type="password" class="form-control" id="registration-field-password1" placeholder="Password">
+                </div>
+                <div class="form-group">
+                    <label for="registration-field-password2">Re-type Password</label>
+                    <input type="password" class="form-control" id="registration-field-password2" placeholder="Password">
+                </div>
+                <div class="form-group">
+                    <label for="registration-field-displayname">Display Name</label>
+                    <input type="text" class="form-control" id="registration-field-displayname" placeholder="Your name">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <span class="pull-right">
+                    <button class="btn btn-success" id="register-dialog-register-button">Create Account</button>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function registrationDialog() {
+        var $registerDialog = $('#register-dialog');
+
+        $registerDialog.modal('show');
+    }
+    $(document).ready(function () {
+        $('.registration-link').on('click', function (e) {
+            e.preventDefault();
+            registrationDialog();
+        });
+
+        $('#register-dialog-register-button').on('click', function (e) {
+            var $displayName   = $('#registration-field-displayname'),
+                $email         = $('#registration-field-email'),
+                $pw1           = $('#registration-field-password1'),
+                $pw2           = $('#registration-field-password2'),
+                user           = {
+                    displayName : $displayName.val().trim(),
+                    email       : $email.val().trim(),
+                    password    : $pw1.val().trim()
+                },
+                retypePassword = $pw2.val().trim(),
+                errors         = [];
+
+            if (!user.email.length) {
+                errors.push('Email Address is required');
+                $email.parent().addClass('has-error');
+            }
+            else {
+                $email.parent().removeClass('has-error');
+            }
+
+            if (!user.password.length) {
+                errors.push('Password is required');
+                $pw1.parent().addClass('has-error');
+            }
+            else {
+                if (user.password !== retypePassword) {
+                    errors.push('Password entered do not match.');
+                    $pw1.parent().addClass('has-error');
+                    $pw2.parent().addClass('has-error');
+                }
+                else {
+                    $pw1.parent().removeClass('has-error');
+                }
+            }
+
+            if (!user.displayName.length) {
+                errors.push('Display Name is required');
+                $displayName.parent().addClass('has-error');
+            }
+            else {
+                $displayName.parent().removeClass('has-error');
+            }
+
+            if (errors.length) {
+                BootstrapDialog.alert({
+                    type    : BootstrapDialog.TYPE_DANGER,
+                    title   : 'Errors',
+                    message : '<ul>' + errors.join('\n') + '</ul>'
+                });
+                return;
+            }
+
+            user.password = md5(user.password);
+            user.userGroupId = 2;
+
+
+            rpc('Users.register', {
+                params  : {
+                    user : user
+                },
+                success : function (o) {
+                    if (o.success) {
+                        BootstrapDialog.alert({
+                            title    : 'Success!',
+                            message  : 'Account created',
+                            callback : function () {
+                                window.location.reload();
+                            }
+                        });
+                    }
+                    else {
+                        BootstrapDialog.alert({
+                            type     : BootstrapDialog.TYPE_DANGER,
+                            title    : 'Error',
+                            message  : o.message,
+                            callback : function () {
+
+                            }
+                        });
+                    }
+                }
+            });
+
+        });
+
+    });
+</script>

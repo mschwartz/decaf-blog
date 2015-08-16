@@ -77,7 +77,6 @@ Schema.add({
     primaryKey : 'userId',
     fields     : [
         { name : 'userId', type : 'int', autoIncrement : true },
-        { name : 'username', type : 'varchar', size : 64 },
         { name : 'displayName', type : 'varchar', size : 128 },
         { name : 'userGroupId', type : 'int' },
         { name : 'email', type : 'varchar', size : 128 },
@@ -90,7 +89,6 @@ Schema.add({
         { name : 'lastAccess', type : 'int' }
     ],
     indexes    : [
-        'username',
         'email'
     ],
     onCreate   : function () {
@@ -99,7 +97,6 @@ Schema.add({
         try {
             var now   = decaf.timestamp(),
                 admin = Users.putOne({
-                    username    : 'admin',
                     displayName : 'Administrator',
                     userGroupId : Schema.findOne('UserGroups', { userGroupName : 'Administrators' }).userGroupId,
                     email       : Config.adminEmail,
