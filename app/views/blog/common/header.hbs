@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+{{>common/head}}
+<body class="fuelux">
+{{>common/scripts}}
+{{>common/navbar}}
+{{^blogUser}}
+   {{>dialogs/login-dialog}}
+   {{>dialogs/registration-dialog}}
+{{/blogUser}}
+<div class="container-fluid">
+{{>common/breadcrumb}}

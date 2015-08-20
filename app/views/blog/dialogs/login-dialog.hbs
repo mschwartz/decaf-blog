@@ -1,0 +1,139 @@
+<div id="login-dialog" class="modal fade" role="dialog" area-labelledby="login-dailog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Sign In</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="login-dialog-email">Email Address</label>
+                    <input type="email" class="form-control" id="login-dialog-email" placeholder="Email">
+                </div>
+                <div class="form-group">
+                    <label for="login-field-password">Password</label>
+                    <input type="password" class="form-control" id="login-dialog-password" placeholder="Password">
+                </div>
+                <div class="form-group">
+                    <label for="login-remember-checkbox">Remember me</label>
+
+                    <div>
+                        <input id="login-dialog-remember-me" type="checkbox" value="Remember Me">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default pull-left" id="login-dialog-forgot-button">Forgot Password</button>
+                <span class="pull-right">
+                    <button class="btn btn-success" id="login-dialog-login-button">Sign In</button>
+                    <button class="btn btn-danger" id="login-dialog-cancel-button">Cancel</button>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    (function () {
+        function showDialog() {
+            var $loginDialog = $('#login-dialog');
+
+            $loginDialog.modal('show');
+        }
+
+        function hideDialog() {
+            var $loginDialog = $('#login-dialog');
+
+            $loginDialog.modal('hide');
+        }
+
+        $(document).ready(function () {
+            $('#login-dialog-remember-me').bootstrapSwitch({
+                onText  : 'Yes',
+                offText : 'No'
+            });
+
+            $('.login-link').on('click', function ( e ) {
+                e.preventDefault();
+                showDialog();
+            });
+
+            $('#login-dialog-cancel-button').on('click', function ( e ) {
+                e.preventDefault();
+                hideDialog();
+            });
+
+            $('#login-dialog-login-button').on('click', function ( e ) {
+                var $email    = $('#login-dialog-email'),
+                    $password = $('#login-dialog-password'),
+                    email     = $email.val(),
+                    password  = $password.val(),
+                    errors    = [];
+
+                if ( !email.length ) {
+                    errors.push('Email Address is required');
+                    $email.parent().addClass('has-error');
+                }
+                else {
+                    $email.parent().removeClass('has-error');
+                }
+
+                if ( !password.length ) {
+                    errors.push('Password is required');
+                    $password.parent().addClass('has-error');
+                }
+
+                if ( errors.length ) {
+                    BootstrapDialog.alert({
+                        type    : BootstrapDialog.TYPE_DANGER,
+                        title   : 'Errors',
+                        message : '<ul>' + errors.join('\n') + '</ul>'
+                    });
+                    return;
+                }
+
+                hideDialog();
+                rpc('Users.login', {
+                    params  : {
+                        email      : email,
+                        password   : md5(password),
+                        rememberMe : $('#login-dialog-remember-me').bootstrapSwitch('state')
+                    },
+                    success : function ( response ) {
+                        console.log('success');
+                        console.dir(arguments);
+                        if ( response.success ) {
+                            BootstrapDialog.alert({
+                                type: BootstrapDialog.TYPE_SUCCESS,
+                                title: 'Success',
+                                message: 'Sign in successful',
+                                callback: function() {
+                                    window.location.reload();
+                                }
+                            });
+                            setTimeout(function() {
+                                window.location.reload();
+                            }, 1500);
+
+                        }
+                        else {
+                            BootstrapDialog.alert({
+                                type     : BootstrapDialog.TYPE_DANGER,
+                                title    : 'Errors',
+                                message  : response.message,
+                                callback : function () {
+                                    showDialog();
+                                }
+                            });
+                        }
+                    },
+                    failure : function () {
+                        console.log('failure');
+                        console.dir(arguments);
+                    }
+                });
+            });
+        });
+    }());
+
+</script>

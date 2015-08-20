@@ -5,15 +5,18 @@
 /*global require, module, sync */
 var Config          = require('Config'),
     TemplateManager = require('decaf-hoganjs').TemplateManager,
-    viewManager     = new TemplateManager('app/views'),
+    blogViewManager     = new TemplateManager('app/views/blog'),
+    adminViewManager     = new TemplateManager('app/views/admin'),
     Users           = require('Stores/Users');
 
 function Page(req, res) {
-    this.req = req;
-    this.res = res;
+    var me = this;
+
+    me.req = req;
+    me.res = res;
 
     // add url of style sheets to be added to page
-    this._css = [
+    me._css = [
         '/bower_components/bootstrap/dist/css/bootstrap.min.css',
         '/bower_components/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css',
         '/bower_components/fuelux/dist/css/fuelux.min.css',
@@ -22,7 +25,7 @@ function Page(req, res) {
         '/bower_components/bootstrap-social/bootstrap-social.css'
     ];
     // add url to scripts to be added to page
-    this._scripts = [
+    me._scripts = [
         '/bower_components/bootstrap/dist/js/bootstrap.min.js',
         '/bower_components/bootstrap-switch/dist/js/bootstrap-switch.min.js',
         '/bower_components/fuelux/dist/js/fuelux.js',
@@ -32,8 +35,8 @@ function Page(req, res) {
         '/md5.js'
     ];
 
-    this.renderTemplate = sync(function (tpl, o) {
-            return viewManager[ tpl ].render(o, viewManager);
+    me.renderTemplate = sync(function (tpl, o) {
+            return me.viewManager[ tpl ].render(o, me.viewManager);
         }
     );
 }
@@ -67,12 +70,14 @@ decaf.extend(Page.prototype, {
 });
 function AdminPage(req, res) {
     var page = new Page(req, res);
+    page.viewManager = adminViewManager;
     page.addStylesheet('bower_components/startbootstrap-sb-admin-2/dist/css/sb-admin-2.css');
     page.addStylesheet('/css/admin.css');
     return page;
 }
 function BlogPage(req, res) {
     var page = new Page(req, res);
+    page.viewManager = blogViewManager;
     page.addStylesheet('/css/blog.css');
     return page;
 }

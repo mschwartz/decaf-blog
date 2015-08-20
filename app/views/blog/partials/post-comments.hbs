@@ -1,11 +1,14 @@
 <h1>{{comments.count}} Comments</h1>
 {{#comments.count}}
-    <div class="post-comment">
-        <p>By {{creatorInfo.displayName}} <span class="moment">{{created}}</span></p>
+    {{#comments}}
+        <div class="post-comment">
+            <p>By {{creatorInfo.displayName}} <span class="moment">{{created}}</span></p>
 
-        <p>{{content}}</p>
-    </div>
+            <p>{{content}}</p>
+        </div>
+    {{/comments}}
 {{/comments.count}}
+{{#blogUser}}
 <form>
     <div class="form-group">
         <label for="comment-text">Comment on this post:</label>
@@ -16,7 +19,11 @@
     </span>
 </form>
 <script>
-    $('#post-comment-button').on('click', function(e) {
+    $('#post-comment-button').on('click', function ( e ) {
         e.preventDefault();
     });
 </script>
+{{/blogUser}}
+{{^blogUser}}
+    <em>You must sign in to comment.</em>
+{{/blogUser}}

@@ -1,4 +1,4 @@
-{{>blog/header}}
+{{>common/header}}
 {{#isAdmin}}
     <script>
         var isAdmin = true,
@@ -20,12 +20,12 @@
             {{#edited}}
                 <p><em>Last updated <span class="moment">{{edited}}</span> by {{editorInfo.displayName}}</em></p>
             {{/edited}}
-            {{>blog/post-comments}}
+            {{>partials/post-comments}}
         </div>
         <div class="col-md-3">
-            {{>blog/search-widget}}
-            {{>blog/social-widget}}
-            {{>blog/tags-widget}}
+            {{>widgets/search-widget}}
+            {{>widgets/social-widget}}
+            {{>widgets/tags-widget}}
             {{#isAdmin}}
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -193,4 +193,4 @@
             $.unblockUI();
         </script>
 {{/post}}
-{{>blog/footer}}
+{{>common/footer}}
