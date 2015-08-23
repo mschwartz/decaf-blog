@@ -42,3 +42,13 @@
         font-size: 36px;
     }
 }
+
+.post-comment {
+    border: 1px solid grey;
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
+.post-comment .byline {
+    font-weight: bold;
+}

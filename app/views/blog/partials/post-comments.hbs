@@ -1,28 +1,60 @@
 <h1>{{comments.count}} Comments</h1>
 {{#comments.count}}
-    {{#comments}}
+    {{#comments.list}}
         <div class="post-comment">
-            <p>By {{creatorInfo.displayName}} <span class="moment">{{created}}</span></p>
+            <p class="byline">By {{creatorInfo.displayName}} <span class="moment">{{created}}</span></p>
 
-            <p>{{content}}</p>
+            <p>{{{content}}}</p>
         </div>
-    {{/comments}}
+    {{/comments.list}}
 {{/comments.count}}
 {{#blogUser}}
-<form>
-    <div class="form-group">
-        <label for="comment-text">Comment on this post:</label>
-        <textarea rows="6" class="form-control" id="comment-body" placeholder="Enter your comment here"></textarea>
-    </div>
+    <form>
+        <input type="hidden" id="commentId" value="{{commentId}}">
+        <input type="hidden" id="blogPostId" value="{{blogPostId}}">
+
+        <div class="form-group">
+            <label for="comment-text">Comment on this post:</label>
+            <textarea rows="6" class="form-control" id="comment-body" placeholder="Enter your comment here"></textarea>
+        </div>
     <span class="pull-right">
         <button id="post-comment-button" class="btn btn-primary">Post Comment</button>
     </span>
-</form>
-<script>
-    $('#post-comment-button').on('click', function ( e ) {
-        e.preventDefault();
-    });
-</script>
+    </form>
+    <script>
+        $('#post-comment-button').on('click', function (e) {
+            e.preventDefault();
+
+            var content = $('#comment-body').val().trim();
+            if (!content.length) {
+                BootstrapDialog.alert({
+                    type: BootstrapDialog.TYPE_DANGER,
+                    title: 'Error',
+                    message: 'Comment is too short.'
+                });
+                return;
+            }
+            rpc('Post.postComment', {
+                params  : {
+                    commentId  : $('#commentId').val(),
+                    blogPostId : $('#blogPostId').val(),
+                    content    : $('#comment-body').val()
+                },
+                success : function (o) {
+                    if (o.success) {
+                        window.location.reload();
+                    }
+                    else {
+                        BootstrapDialog.alert({
+                            type    : BootstrapDialog.TYPE_DANGER,
+                            title   : 'Error',
+                            message : o.message
+                        });
+                    }
+                }
+            })
+        });
+    </script>
 {{/blogUser}}
 {{^blogUser}}
     <em>You must sign in to comment.</em>

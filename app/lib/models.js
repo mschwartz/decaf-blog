@@ -215,7 +215,7 @@ Schema.add({
         { name : 'commentId', type : 'int', autoIncrement : true },
         { name : 'blogPostId', type : 'int' },
         { name : 'replyToId', type : 'int' },
-        { mame : 'approved', type : 'tinyint' },
+        { name : 'approved', type : 'tinyint' },
         { name : 'content', type : 'text' },
         { name : 'replyCount', type : 'int' },
         { name : 'creator', type : 'int' },

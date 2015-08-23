@@ -4,11 +4,22 @@
 
 /*global require, module, sync */
 
-var Schema     = require('decaf-mysql').Schema;
+var Schema = require('decaf-mysql').Schema,
+    Users  = require('Stores/Users');
 
 module.exports = {
     list     : function (example) {
-        return Schema.list('Comments', example, Schema.clean);
+        debugger;
+        return Schema.list('Comments', example, function (record) {
+            var user = Users.getById(record.creator);
+            record.creatorInfo = { userId: user.userId, displayName: user.displayName };
+            user = Users.getById(record.editor);
+            record.editorInfo = { userId: user.userId, displayName: user.displayName };
+            record.content = record.content.replace(/</g, '&lt;');
+            record.content = record.content.replace(/\n/g, '<br/>');
+            record = Schema.clean('Comments', record);
+            return record;
+        });
     },
     find     : function (example) {
         return Schema.find('Comments', example);

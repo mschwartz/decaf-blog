@@ -4,7 +4,8 @@
 
 /*global require, module, sync */
 
-var Schema       = require('decaf-mysql').Schema;
+var Schema       = require('decaf-mysql').Schema,
+    Comments = require('Stores/Comments');
 
 module.exports = {
     list     : function (example, fn) {
@@ -38,6 +39,7 @@ module.exports = {
         return Schema.remove('BlogPosts', example);
     },
     decorate : function (record) {
+        debugger;
         var tags = [];
         decaf.each(SQL.getDataRows('SELECT * FROM BlogPostTags,Tags WHERE Tags.tagId=BlogPostTags.tagId AND BlogPostTags.blogPostId=' + SQL.quote(record.blogPostId)), function(tag) {
             console.dir(tag);
@@ -53,7 +55,7 @@ module.exports = {
         user = Schema.findOne('Users', { userId: record.editor });
         record.editorInfo = { userId: user.userId, displayName: user.displayName };
 
-        record.comments = Schema.list('Comments', { blogPostId: record.blogPostId });
+        record.comments = Comments.list({ blogPostId: record.blogPostId });
 
         return record;
     },

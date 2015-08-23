@@ -7,7 +7,7 @@ var BlogPosts = require('Stores/BlogPosts'),
 var post    = BlogPosts.getBySEO(req.args[ 0 ]),
     isAdmin = req.user && req.user.userGroupId === 1;
 
-if ( isAdmin ) {
+if (isAdmin) {
     page.addStylesheet('/bower_components/summernote/dist/summernote.css');
     page.addScript('/bower_components/summernote/dist/summernote.min.js');
 }
@@ -23,6 +23,7 @@ page.render('post', {
         { active : true, text : post.title }
     ],
     post        : post,
+    commentId   : 0,
     isAdmin     : isAdmin,
     postEncoded : JSON.stringify(post)
 });

@@ -1,7 +1,6 @@
 /*global req, res, require */
 
-var Tags   = require('Stores/Tags'),
-    params = req.params;
+var Tags   = require('Stores/Tags');
 
 var methods = {
     list: function() {
